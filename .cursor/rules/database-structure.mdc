@@ -1,0 +1,62 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Database Structure
+
+The application uses Supabase as its database and storage solution. The database schema is defined in [types/supabase.ts](mdc:types/supabase.ts).
+
+## Tables
+
+### users
+- `id`: UUID (primary key)
+- `username`: TEXT (unique)
+- `password_hash`: TEXT (bcrypt hashed)
+- `profile_image_url`: TEXT
+- `created_at`: TIMESTAMP
+
+### drink_points
+- `drink_type`: TEXT (primary key, enum: 'Beer', 'Wine', 'Cocktail', 'Shot')
+- `points`: INTEGER
+
+### drinks
+- `id`: UUID (primary key)
+- `user_id`: UUID (foreign key to users.id)
+- `drink_type`: TEXT (foreign key to drink_points.drink_type)
+- `points`: INTEGER
+- `created_at`: TIMESTAMP
+
+### cigarettes
+- `id`: UUID (primary key)
+- `user_id`: UUID (foreign key to users.id)
+- `count`: INTEGER
+- `created_at`: TIMESTAMP
+
+### tweets
+- `id`: UUID (primary key)
+- `user_id`: UUID (foreign key to users.id)
+- `content`: TEXT (max 300 chars)
+- `image_url`: TEXT (nullable)
+- `created_at`: TIMESTAMP
+
+## Views
+
+### leaderboard
+- Combines users, drinks, and cigarettes data
+- Shows total points and cigarette count per user
+
+## Storage Buckets
+
+- `profile-images`: User profile pictures
+- `tweet-images`: Images attached to tweets
+
+## Database Operations
+
+All database operations are handled through utility functions in [lib/db.ts](mdc:lib/db.ts), including:
+- User registration and authentication
+- Drink and cigarette tracking
+- Tweet creation
+- Leaderboard retrieval
+
+Storage operations are in [lib/storage.ts](mdc:lib/storage.ts) for file uploads.

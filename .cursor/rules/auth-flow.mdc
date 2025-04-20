@@ -1,0 +1,59 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Authentication Flow
+
+The Party Drinks application uses NextAuth.js for authentication, with a custom credentials provider that validates against users in the Supabase database.
+
+## Registration Flow
+
+1. User fills out the registration form at [app/auth/signup/page.tsx](mdc:app/auth/signup/page.tsx)
+2. User provides username, password, and uploads a profile picture
+3. The profile image is uploaded to Supabase storage using [lib/storage.ts](mdc:lib/storage.ts)
+4. User data is submitted to the registration API at [app/api/auth/register/route.ts](mdc:app/api/auth/register/route.ts)
+5. After successful registration, the user is automatically signed in and redirected to the leaderboard
+
+## Login Flow
+
+1. User enters credentials in the login form at [app/auth/signin/page.tsx](mdc:app/auth/signin/page.tsx)
+2. NextAuth.js validates credentials against the Supabase database
+3. On successful login, the user is redirected to the leaderboard or the original requested page
+
+## Protected Routes
+
+All routes requiring authentication are protected by the middleware:
+
+- The [middleware.ts](mdc:middleware.ts) file handles authentication checks and redirects
+- Unauthenticated users trying to access protected routes are redirected to the login page
+- Authenticated users trying to access auth pages are redirected to the leaderboard
+
+## Session Management
+
+- NextAuth.js handles session management with JWT tokens
+- The auth configuration is defined in [lib/auth.ts](mdc:lib/auth.ts)
+- The [components/auth-provider.tsx](mdc:components/auth-provider.tsx) component provides session context to the application
+
+## Authentication Logic
+
+- When a user hits the root path (`/`), the [app/page.tsx](mdc:app/page.tsx) page checks auth status:
+  - Authenticated users are redirected to `/leaderboard`
+  - Unauthenticated users are redirected to `/auth/signin`
+
+- Auth pages ([signin](mdc:app/auth/signin/page.tsx) and [signup](mdc:app/auth/signup/page.tsx)) check session status:
+  - If already authenticated, redirect to `/leaderboard`
+  - Otherwise, display the auth form
+
+## Security Considerations
+
+- Passwords are hashed using bcrypt with appropriate salt rounds
+- JWT tokens are encrypted using the NEXTAUTH_SECRET environment variable
+- Session tokens have a 30-day expiration by default
+
+## Key Components
+
+- **Registration Form**: [app/auth/signup/page.tsx](mdc:app/auth/signup/page.tsx)
+- **Registration API**: [app/api/auth/register/route.ts](mdc:app/api/auth/register/route.ts)
+- **Auth Provider**: [components/auth-provider.tsx](mdc:components/auth-provider.tsx)
+- **User Database Functions**: [lib/db.ts](mdc:lib/db.ts)

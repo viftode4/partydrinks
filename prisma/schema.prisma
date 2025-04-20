@@ -1,0 +1,23 @@
+model TweetLike {
+  id         String   @id @default(uuid())
+  user_id    String
+  tweet_id   String
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tweet      Tweet    @relation(fields: [tweet_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, tweet_id])
+  @@index([tweet_id])
+  @@index([user_id])
+}
+
+model Tweet {
+  id         String      @id @default(uuid())
+  content    String
+  user_id    String
+  created_at DateTime    @default(now())
+  user       User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  likes      TweetLike[]
+
+  @@index([user_id])
+} 

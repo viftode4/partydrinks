@@ -1,0 +1,58 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Application Structure
+
+The Party Drinks application follows Next.js 15 app router structure with a focus on separation of concerns.
+
+## Directory Structure
+
+- `/app`: Next.js app router pages and API routes
+  - `/app/auth`: Authentication pages (signup, signin)
+  - `/app/(protected)`: Routes that require authentication
+  - `/app/api`: Server-side API endpoints
+  - `/app/leaderboard`: Main leaderboard page
+  - `/app/tweets`: Tweets display and creation
+  - `/app/projector`: Special view for displaying on a projector
+
+- `/components`: Reusable React components
+  - `/components/ui`: UI components (shadcn/ui)
+  - `/components/forms`: Form components for user input
+  - `/components/leaderboard`: Leaderboard-specific components
+  - `/components/tweets`: Tweet display and creation components
+
+- `/lib`: Utility functions and services
+  - `/lib/supabase.ts`: [Supabase client configuration](mdc:lib/supabase.ts)
+  - `/lib/db.ts`: [Database operations](mdc:lib/db.ts)
+  - `/lib/storage.ts`: [File storage operations](mdc:lib/storage.ts)
+
+- `/types`: TypeScript type definitions
+  - `/types/supabase.ts`: [Database schema types](mdc:types/supabase.ts)
+
+- `/hooks`: Custom React hooks
+  - `use-toast.ts`: Toast notification hook
+  - `use-authentication.ts`: Authentication state hook
+
+## Key Layouts and Pages
+
+- [app/layout.tsx](mdc:app/layout.tsx): Root layout with theme provider
+- [app/(protected)/layout.tsx](mdc:app/(protected)/layout.tsx): Protected routes layout
+- [app/auth/signup/page.tsx](mdc:app/auth/signup/page.tsx): User registration
+- [app/api/auth/register/route.ts](mdc:app/api/auth/register/route.ts): Registration API
+- [app/api/init-storage/route.ts](mdc:app/api/init-storage/route.ts): Storage initialization
+
+## Data Flow
+
+1. Client components make API requests to the `/app/api` endpoints
+2. API routes use utility functions from `/lib` to interact with Supabase
+3. Typed responses are returned to the client based on the types in `/types`
+4. UI components display and allow interaction with the data
+
+## Mobile-First Design
+
+- All components use responsive design principles
+- Special projector view for display on large screens
+- Optimized for touch interactions on mobile devices
+
