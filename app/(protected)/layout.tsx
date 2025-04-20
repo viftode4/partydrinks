@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { MobileNav } from "@/components/mobile-nav"
 import { DrinkModal } from "@/components/modals/drink-modal"

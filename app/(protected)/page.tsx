@@ -10,7 +10,18 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { motion } from "framer-motion"
 import { Suspense } from 'react'
-import LeaderboardClient from './LeaderboardClient'
+import dynamic from 'next/dynamic'
+
+const LeaderboardClient = dynamic(() => import('./LeaderboardClient'), {
+  ssr: false,
+  loading: () => (
+    <div className="container max-w-md mx-auto p-4 space-y-3">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index} className="w-full h-20 rounded-md bg-muted animate-pulse" />
+      ))}
+    </div>
+  ),
+})
 
 export default function LeaderboardPage() {
   return (
