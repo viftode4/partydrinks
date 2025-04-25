@@ -46,14 +46,12 @@ export function TweetCard({ tweet }: TweetCardProps) {
           <p className="whitespace-pre-wrap break-words">{tweet.content}</p>
           {tweet.image_url && (
             <div className="mt-3 rounded-lg overflow-hidden border">
-              <div className="relative w-full">
+              <div className="aspect-video relative">
                 <Image
                   src={tweet.image_url}
                   alt="Tweet image"
-                  width={500}
-                  height={300}
-                  className="object-contain max-h-[500px] w-full"
-                  unoptimized
+                  fill
+                  className="object-cover"
                 />
               </div>
             </div>

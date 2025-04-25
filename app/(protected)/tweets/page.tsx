@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
+import { TweetForm } from "@/components/tweet-form"
 import { TweetCard } from "@/components/tweet-card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Info } from "lucide-react"
 import type { Tweet, User } from "@/lib/types"
 
 interface ExtendedTweet extends Tweet {
@@ -44,14 +43,9 @@ export default function TweetsPage() {
 
   return (
     <div className="container max-w-md mx-auto p-4">
-      <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
-        <Info className="h-4 w-4 text-amber-500" />
-        <AlertDescription className="text-amber-500">
-          This is a view-only demonstration. No tweets can be added.
-        </AlertDescription>
-      </Alert>
-
       <h2 className="text-lg font-bold mb-4">Party Tweets</h2>
+
+      <TweetForm onTweetPosted={fetchTweets} />
 
       <div>
         {isLoading && tweets.length === 0 ? (
@@ -60,7 +54,7 @@ export default function TweetsPage() {
           ))
         ) : tweets.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-muted-foreground">No tweets available in view-only mode.</p>
+            <p className="text-muted-foreground">No tweets yet. Be the first to post!</p>
           </div>
         ) : (
           tweets.map((tweet) => <TweetCard key={tweet.id} tweet={tweet} />)

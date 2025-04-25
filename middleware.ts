@@ -6,6 +6,7 @@ import type { NextRequest } from 'next/server'
 const protectedRoutes = [
   '/leaderboard',
   '/tweets',
+  '/projector',
   '/profile'
 ]
 
@@ -15,9 +16,38 @@ const authRoutes = [
   '/auth/signup',
 ]
 
-// Disabling authentication checks - making site publicly accessible
 export async function middleware(request: NextRequest) {
-  // Always continue to the requested page without authentication checks
+  const { pathname } = request.nextUrl
+  
+  // Get the token from the request
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  })
+  
+  const isAuthenticated = !!token
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
+  const isAuthRoute = authRoutes.some(route => pathname === route)
+  
+  // Case 1: User is logged in and trying to access auth routes
+  if (isAuthenticated && isAuthRoute) {
+    return NextResponse.redirect(new URL('/leaderboard', request.url))
+  }
+  
+  // Case 2: User is not logged in and trying to access protected routes
+  if (!isAuthenticated && isProtectedRoute) {
+    const url = new URL('/auth/signin', request.url)
+    // Add the original path as a "callbackUrl" parameter
+    url.searchParams.set('callbackUrl', pathname)
+    return NextResponse.redirect(url)
+  }
+  
+  // Case 3: User is logged in and hits the root path
+  if (isAuthenticated && pathname === '/') {
+    return NextResponse.redirect(new URL('/leaderboard', request.url))
+  }
+  
+  // In all other cases, continue
   return NextResponse.next()
 }
 
