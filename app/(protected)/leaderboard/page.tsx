@@ -5,6 +5,8 @@ import { useSession } from "next-auth/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Info } from "lucide-react"
 import { Beer } from "lucide-react"
 import { Wine } from "lucide-react" 
 import { GlassWater } from "lucide-react" 
@@ -64,6 +66,13 @@ export default function LeaderboardPage() {
 
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
+      <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
+        <Info className="h-4 w-4 text-amber-500" />
+        <AlertDescription className="text-amber-500">
+          This is a view-only demonstration. No data can be added or modified.
+        </AlertDescription>
+      </Alert>
+      
       <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight">Party Leaderboard</h1>
         <p className="text-muted-foreground mt-2">Who's drinking the most tonight?</p>
@@ -158,7 +167,7 @@ function LeaderboardTable({ entries, loading }: { entries: LeaderboardEntry[], l
         ))
       ) : entries.length === 0 ? (
         <div className="py-8 text-center text-muted-foreground">
-          No participants yet. Be the first to grab a drink!
+          No participant data available in view-only mode.
         </div>
       ) : (
         entries.map((entry, index) => (

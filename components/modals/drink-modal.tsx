@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useSession } from "next-auth/react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { useDrinkModal } from "@/hooks/use-drink-modal"
-import { Beer, Cigarette, Martini, Wine } from "lucide-react"
+import { Beer, Cigarette, Info, Martini, Wine } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -26,9 +26,9 @@ export function DrinkModal() {
   const addDrink = async (drinkType: string) => {
     if (!session?.user?.id) {
       toast({
-        title: "Authentication Error",
-        description: "You must be signed in to add a drink.",
-        variant: "destructive",
+        title: "Demo Mode",
+        description: "In demo mode, drinks are not tracked. Enjoy browsing!",
+        variant: "default",
       })
       return
     }
@@ -93,9 +93,9 @@ export function DrinkModal() {
   const addCigarette = async () => {
     if (!session?.user?.id) {
       toast({
-        title: "Authentication Error",
-        description: "You must be signed in to add a cigarette.",
-        variant: "destructive",
+        title: "Demo Mode",
+        description: "In demo mode, cigarettes are not tracked. Enjoy browsing!",
+        variant: "default",
       })
       return
     }
@@ -136,6 +136,12 @@ export function DrinkModal() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-bold">Add to your score</DialogTitle>
+          {!session?.user && (
+            <DialogDescription className="text-center flex items-center justify-center gap-2 mt-2 text-amber-500">
+              <Info className="h-4 w-4" />
+              <span>You're in demo mode. Actions are displayed but not tracked.</span>
+            </DialogDescription>
+          )}
         </DialogHeader>
         <div className="grid gap-6">
           <div className="grid grid-cols-2 gap-4">

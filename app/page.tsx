@@ -1,24 +1,19 @@
 "use client"
 
 import { useEffect } from "react"
-import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Beer, Martini, Wine } from "lucide-react"
 import { motion } from "framer-motion"
 
 export default function HomePage() {
-  const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/leaderboard")
-    } else if (status === "unauthenticated") {
-      router.push("/auth/signin")
-    }
-  }, [status, router])
+    // Redirect directly to projector page without auth check
+    router.push("/projector")
+  }, [router])
 
-  // Show loading animation while determining auth status
+  // Show loading animation while redirecting
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600">
       <div className="text-center">

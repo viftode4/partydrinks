@@ -1,13 +1,13 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Beer, LogOut } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Beer, Info } from "lucide-react"
 
 interface UserStats {
   totalPoints: number
@@ -20,7 +20,6 @@ interface UserStats {
 
 export default function ProfilePage() {
   const { data: session } = useSession()
-  const router = useRouter()
   const [stats, setStats] = useState<UserStats>({
     totalPoints: 0,
     totalDrinks: 0,
@@ -30,54 +29,60 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchUserStats = async () => {
-      if (!session?.user?.id) return
-
-      try {
-        setIsLoading(true)
-        const response = await fetch(`/api/users/${session.user.id}/stats`)
-        if (response.ok) {
-          const data = await response.json()
-          setStats({
-            totalPoints: data.totalPoints || 0,
-            totalDrinks: data.totalDrinks || 0,
-            cigaretteCount: data.cigaretteCount || 0,
-            drinkTypes: data.drinkTypes || {},
-          })
+    // Only try to fetch stats if we have a session
+    if (session?.user?.id) {
+      const fetchUserStats = async () => {
+        try {
+          setIsLoading(true)
+          const response = await fetch(`/api/users/${session.user.id}/stats`)
+          if (response.ok) {
+            const data = await response.json()
+            setStats({
+              totalPoints: data.totalPoints || 0,
+              totalDrinks: data.totalDrinks || 0,
+              cigaretteCount: data.cigaretteCount || 0,
+              drinkTypes: data.drinkTypes || {},
+            })
+          }
+        } catch (error) {
+          console.error("Failed to fetch user stats:", error)
+        } finally {
+          setIsLoading(false)
         }
-      } catch (error) {
-        console.error("Failed to fetch user stats:", error)
-      } finally {
-        setIsLoading(false)
       }
-    }
 
-    fetchUserStats()
+      fetchUserStats()
+    } else {
+      // If no session, just set loading to false
+      setIsLoading(false)
+    }
   }, [session?.user?.id])
 
-  const handleSignOut = async () => {
-    await signOut({ redirect: false })
-    router.push("/auth/signin")
-  }
-
-  if (!session?.user) {
-    return null
-  }
+  // Show generic profile for non-authenticated users
+  const userName = session?.user?.name || "Party Guest"
+  const userImage = session?.user?.image || "/placeholder-user.jpg"
 
   return (
     <div className="container max-w-md mx-auto p-4">
+      <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
+        <Info className="h-4 w-4 text-amber-500" />
+        <AlertDescription className="text-amber-500">
+          This is a view-only demonstration. No data can be added or modified.
+        </AlertDescription>
+      </Alert>
+      
       <Card>
         <CardHeader className="flex flex-row items-center gap-4 pb-2">
           <div className="relative h-20 w-20 overflow-hidden rounded-full">
             <Image
-              src={session.user.image || "/placeholder-user.jpg"}
-              alt={session.user.name || "User"}
+              src={userImage}
+              alt={userName}
               fill
               className="object-cover"
             />
           </div>
           <div>
-            <CardTitle className="text-xl">{session.user.name}</CardTitle>
+            <CardTitle className="text-xl">{userName}</CardTitle>
             <p className="text-sm text-muted-foreground">Party Member</p>
           </div>
         </CardHeader>
@@ -127,11 +132,6 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-
-            <Button variant="outline" className="w-full" onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
           </div>
         </CardContent>
       </Card>

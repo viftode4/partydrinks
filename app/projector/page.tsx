@@ -6,7 +6,8 @@ import { TweetCard } from "@/components/tweet-card"
 import type { LeaderboardUser } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Beer, Martini, Wine, Clock } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Beer, Martini, Wine, Clock, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ExtendedTweet {
@@ -107,6 +108,13 @@ export default function ProjectorPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-8">
+      <Alert className="mb-6 border-amber-500/50 bg-amber-500/10">
+        <Info className="h-4 w-4 text-amber-500" />
+        <AlertDescription className="text-amber-500">
+          This is a view-only demonstration. No data can be added or modified.
+        </AlertDescription>
+      </Alert>
+      
       <header className="mb-8 text-center">
         <motion.div
           className="flex justify-center gap-8 mb-6"

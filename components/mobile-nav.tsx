@@ -2,23 +2,21 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, MessageSquare, Plus, User } from "lucide-react"
+import { Home, MessageSquare, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { useDrinkModal } from "@/hooks/use-drink-modal"
 
 export function MobileNav() {
   const pathname = usePathname()
-  const { onOpen } = useDrinkModal()
 
-  // Don't render navigation on auth pages or projector view
-  if (pathname.startsWith("/auth") || pathname === "/projector" || pathname === "/") {
+  // Don't render navigation on projector view or homepage
+  if (pathname === "/projector" || pathname === "/") {
     return null
   }
 
   return (
     <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t bg-background md:hidden">
-      <div className="mx-auto grid h-full max-w-lg grid-cols-4">
+      <div className="mx-auto grid h-full max-w-lg grid-cols-3">
         <Link href="/leaderboard" className="group inline-flex flex-col items-center justify-center px-5">
           <Button
             variant="ghost"
@@ -44,13 +42,6 @@ export function MobileNav() {
             Tweets
           </span>
         </Link>
-
-        <button onClick={onOpen} className="group inline-flex flex-col items-center justify-center px-5">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-pink-600 text-white">
-            <Plus className="h-6 w-6" />
-            <span className="sr-only">Add Drink</span>
-          </div>
-        </button>
 
         <Link href="/profile" className="group inline-flex flex-col items-center justify-center px-5">
           <Button
