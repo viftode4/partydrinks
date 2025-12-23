@@ -3,17 +3,18 @@ description:
 globs:
 alwaysApply: false
 ---
+
 # Party Drinks Application Overview
 
-This is a social party application that tracks drinking activities and provides a leaderboard for party attendees. 
+This is a social party application that tracks drinking activities and provides a leaderboard for party attendees.
 
 ## Core Features
 
 - **User Authentication**: Registration and login with username, password, and profile picture
 - **Drink Tracking**: Log different types of drinks (Beer, Wine, Cocktail, Shot) with different point values
-- **Cigarette Counter**: Track cigarettes smoked by users
+- **win Counter**: Track wins smoked by users
 - **Tweet System**: Post short messages (max 300 chars) with optional images
-- **Leaderboard**: Display users ranked by drink points with cigarette count filters
+- **Leaderboard**: Display users ranked by drink points with win count filters
 - **Dual Views**: Mobile-first UI for participants and a projector view for displaying stats
 
 ## Key Files

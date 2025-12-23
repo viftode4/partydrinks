@@ -12,7 +12,7 @@ import { Beer, LogOut } from "lucide-react"
 interface UserStats {
   totalPoints: number
   totalDrinks: number
-  cigaretteCount: number
+  winCount: number
   drinkTypes: {
     [key: string]: number
   }
@@ -24,7 +24,7 @@ export default function ProfileContent() {
   const [stats, setStats] = useState<UserStats>({
     totalPoints: 0,
     totalDrinks: 0,
-    cigaretteCount: 0,
+    winCount: 0,
     drinkTypes: {},
   })
   const [isLoading, setIsLoading] = useState(true)
@@ -88,11 +88,11 @@ export default function ProfileContent() {
                 )}
               </div>
               <div className="rounded-lg bg-muted p-3 text-center">
-                <h3 className="text-sm font-medium text-muted-foreground">Cigarettes</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">wins</h3>
                 {isLoading ? (
                   <div className="h-6 w-12 animate-pulse bg-muted-foreground/20 rounded mx-auto mt-1" />
                 ) : (
-                  <p className="text-2xl font-bold">{stats.cigaretteCount}</p>
+                  <p className="text-2xl font-bold">{stats.winCount}</p>
                 )}
               </div>
             </div>

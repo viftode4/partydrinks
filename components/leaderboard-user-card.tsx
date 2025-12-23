@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
-import { Beer, Cigarette } from "lucide-react"
+import { Beer, Dices } from "lucide-react"
 import { motion } from "framer-motion"
 import type { LeaderboardUser } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -90,8 +90,8 @@ export function LeaderboardUserCard({ user, isCurrentUser }: LeaderboardUserCard
               className="flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
             >
-              <Cigarette className="h-5 w-5 text-gray-400" />
-              <span className="text-lg font-semibold text-gray-300">{user.cigarette_count}</span>
+              <Dices className="h-5 w-5 text-gray-400" />
+              <span className="text-lg font-semibold text-gray-300">{user.win_count}</span>
             </motion.div>
           </div>
         </div>

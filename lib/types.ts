@@ -24,10 +24,10 @@ export interface Tweet {
 export interface TweetWithUser extends Tweet {
   user: User
   total_points: number
-  cigarette_count: number
+  win_count: number
 }
 
-export interface Cigarette {
+export interface win {
   id: string
   user_id: string
   count: number
@@ -39,7 +39,7 @@ export interface LeaderboardUser {
   username: string
   image_url: string
   total_points: number
-  cigarette_count: number
+  win_count: number
   rank: number
   previousRank?: number
 }

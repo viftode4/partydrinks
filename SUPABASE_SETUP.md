@@ -51,8 +51,8 @@ CREATE TABLE public.drinks (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
 
--- Create cigarettes table
-CREATE TABLE public.cigarettes (
+-- Create wins table
+CREATE TABLE public.wins (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES public.users(id) NOT NULL,
   count INTEGER NOT NULL DEFAULT 1,
@@ -79,12 +79,12 @@ WITH drink_totals AS (
   GROUP BY 
     user_id
 ),
-cigarette_totals AS (
+win_totals AS (
   SELECT 
     user_id,
-    SUM(count) as total_cigarettes
+    SUM(count) as total_wins
   FROM 
-    cigarettes
+    wins
   GROUP BY 
     user_id
 )
@@ -93,13 +93,13 @@ SELECT
   u.username,
   u.profile_image_url,
   COALESCE(dt.total_points, 0) AS total_points,
-  COALESCE(ct.total_cigarettes, 0) AS cigarette_count
+  COALESCE(ct.total_wins, 0) AS win_count
 FROM 
   users u
 LEFT JOIN 
   drink_totals dt ON u.id = dt.user_id
 LEFT JOIN 
-  cigarette_totals ct ON u.id = ct.user_id;
+  win_totals ct ON u.id = ct.user_id;
 
 -- Insert default drink point values
 INSERT INTO public.drink_points (drink_type, points) VALUES
@@ -117,7 +117,7 @@ Add the following policies to secure your tables:
 -- Enable Row Level Security
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.drinks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.cigarettes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tweets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.drink_points ENABLE ROW LEVEL SECURITY;
 
@@ -139,13 +139,13 @@ CREATE POLICY "Drinks can only be inserted by service role"
   ON public.drinks FOR INSERT 
   WITH CHECK (auth.role() = 'service_role');
 
--- Cigarettes table policies
-CREATE POLICY "Cigarettes are viewable by everyone" 
-  ON public.cigarettes FOR SELECT 
+-- wins table policies
+CREATE POLICY "wins are viewable by everyone" 
+  ON public.wins FOR SELECT 
   USING (true);
 
-CREATE POLICY "Cigarettes can only be inserted by service role" 
-  ON public.cigarettes FOR INSERT 
+CREATE POLICY "wins can only be inserted by service role" 
+  ON public.wins FOR INSERT 
   WITH CHECK (auth.role() = 'service_role');
 
 -- Tweets table policies

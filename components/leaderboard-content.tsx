@@ -14,14 +14,14 @@ export default function LeaderboardContent() {
   const { data: session } = useSession()
   const [users, setUsers] = useState<LeaderboardUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [includeCigarettes, setIncludeCigarettes] = useState(true)
+  const [includewins, setIncludewins] = useState(true)
   const { onOpen } = useDrinkModal()
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/leaderboard?includeCigarettes=${includeCigarettes}`)
+        const response = await fetch(`/api/leaderboard?includewins=${includewins}`)
         if (response.ok) {
           const data = await response.json()
 
@@ -49,10 +49,10 @@ export default function LeaderboardContent() {
     const intervalId = setInterval(fetchLeaderboard, 10000) // Poll every 10 seconds
 
     return () => clearInterval(intervalId)
-  }, [includeCigarettes, users])
+  }, [includewins, users])
 
-  const handleFilterChange = (includeSmoke: boolean) => {
-    setIncludeCigarettes(includeSmoke)
+  const handleFilterChange = (includeChamp: boolean) => {
+    setIncludewins(includeChamp)
   }
 
   return (

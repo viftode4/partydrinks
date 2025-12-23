@@ -57,7 +57,7 @@ interface UserProfile {
 interface UserStats {
   [key: string]: {
     total_points: number;
-    cigarette_count: number;
+    win_count: number;
   };
 }
 
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
         user_id: tweet.user_id,
         user: userProfile,
         total_points: 0, // Will be updated below
-        cigarette_count: 0 // Will be updated below
+        win_count: 0 // Will be updated below
       }
     })
 
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
     // Get total points for each user
     const { data: pointsData, error: pointsError } = await supabase
       .from("leaderboard")
-      .select("user_id, total_points, cigarette_count")
+      .select("user_id, total_points, win_count")
       .in("user_id", userIds)
 
     if (pointsError) {
@@ -128,18 +128,18 @@ export async function GET(request: NextRequest) {
       if (item.user_id) {
         userStats[item.user_id] = {
           total_points: item.total_points || 0,
-          cigarette_count: item.cigarette_count || 0
+          win_count: item.win_count || 0
         }
       }
     })
 
     // Update each tweet with the user's stats
     const tweetsWithStats = formattedTweets.map(tweet => {
-      const stats = userStats[tweet.user_id] || { total_points: 0, cigarette_count: 0 }
+      const stats = userStats[tweet.user_id] || { total_points: 0, win_count: 0 }
       return {
         ...tweet,
         total_points: stats.total_points,
-        cigarette_count: stats.cigarette_count
+        win_count: stats.win_count
       }
     })
 

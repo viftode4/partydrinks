@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Beer } from "lucide-react"
 import { Wine } from "lucide-react" 
 import { GlassWater } from "lucide-react" 
-import { Cigarette } from "lucide-react"
+import { Dices } from "lucide-react"
 import { Trophy } from "lucide-react"
 import { Calendar } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -20,14 +20,14 @@ type LeaderboardEntry = {
   username: string
   profile_image_url: string
   total_points: number
-  cigarette_count: number
+  win_count: number
 }
 
 export default function LeaderboardPage() {
   const { data: session } = useSession()
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'smokers'>('all')
+  const [filter, setFilter] = useState<'all' | 'champs'>('all')
 
   // Fetch leaderboard data
   useEffect(() => {
@@ -40,8 +40,8 @@ export default function LeaderboardPage() {
           .select('*')
           .order('total_points', { ascending: false })
         
-        if (filter === 'smokers') {
-          query = query.gt('cigarette_count', 0)
+        if (filter === 'champs') {
+          query = query.gt('win_count', 0)
         }
         
         const { data, error } = await query
@@ -69,16 +69,16 @@ export default function LeaderboardPage() {
         <p className="text-muted-foreground mt-2">Who's drinking the most tonight?</p>
       </div>
 
-      <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setFilter(value as 'all' | 'smokers')}>
+      <Tabs defaultValue="all" className="w-full" onValueChange={(value) => setFilter(value as 'all' | 'champs')}>
         <div className="flex justify-center mb-6">
           <TabsList>
             <TabsTrigger value="all" className="flex items-center gap-2">
               <Trophy size={16} />
               <span>All Participants</span>
             </TabsTrigger>
-            <TabsTrigger value="smokers" className="flex items-center gap-2">
-              <Cigarette size={16} />
-              <span>Smokers</span>
+            <TabsTrigger value="champs" className="flex items-center gap-2">
+              <Dices size={16} />
+              <span>Champs</span>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -87,7 +87,7 @@ export default function LeaderboardPage() {
           <LeaderboardTable entries={leaderboard} loading={loading} />
         </TabsContent>
         
-        <TabsContent value="smokers" className="mt-0">
+        <TabsContent value="champs" className="mt-0">
           <LeaderboardTable entries={leaderboard} loading={loading} />
         </TabsContent>
       </Tabs>
@@ -134,7 +134,7 @@ function LeaderboardTable({ entries, loading }: { entries: LeaderboardEntry[], l
         <div className="col-span-1 text-center">#</div>
         <div className="col-span-7">Participant</div>
         <div className="col-span-2 text-center">Points</div>
-        <div className="col-span-2 text-center">Cigarettes</div>
+        <div className="col-span-2 text-center">Wins</div>
       </div>
       
       {loading ? (
@@ -179,10 +179,10 @@ function LeaderboardTable({ entries, loading }: { entries: LeaderboardEntry[], l
             </div>
             <div className="col-span-2 text-center font-bold">{entry.total_points}</div>
             <div className="col-span-2 text-center">
-              {entry.cigarette_count > 0 ? (
+              {entry.win_count > 0 ? (
                 <div className="flex items-center justify-center gap-1">
-                  <Cigarette size={14} />
-                  <span>{entry.cigarette_count}</span>
+                  <Dices size={14} />
+                  <span>{entry.win_count}</span>
                 </div>
               ) : (
                 <span className="text-muted-foreground">-</span>

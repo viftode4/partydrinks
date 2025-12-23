@@ -4,7 +4,7 @@ import { formatDistanceToNow } from "date-fns"
 import Image from "next/image"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Beer, Cigarette } from "lucide-react"
+import { Beer, Dices } from "lucide-react"
 import { motion } from "framer-motion"
 import type { Tweet, User } from "@/lib/types"
 
@@ -12,7 +12,7 @@ interface TweetCardProps {
   tweet: Tweet & {
     user: User
     total_points: number
-    cigarette_count: number
+    win_count: number
   }
 }
 
@@ -33,8 +33,8 @@ export function TweetCard({ tweet }: TweetCardProps) {
                 <span>{tweet.total_points} pts</span>
               </div>
               <div className="flex items-center">
-                <Cigarette className="mr-1 h-3 w-3 text-gray-400" />
-                <span>{tweet.cigarette_count}</span>
+                <Dices className="mr-1 h-3 w-3 text-gray-400" />
+                <span>{tweet.win_count}</span>
               </div>
             </div>
           </div>
