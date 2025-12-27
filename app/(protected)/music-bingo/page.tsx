@@ -9,173 +9,190 @@ import SpotifyPlayer from "@/components/SpotifyPlayer"
 import { Loader2, Music } from "lucide-react"
 import { getSpotifyAuthUrl } from "@/lib/spotify"
 
-/* ---------------- Types ---------------- */
-
 interface Song {
-  id: string
-  uri: string
-  title: string
-  artist: string
-  duration: number
-  image?: string
+    id: string
+    uri: string
+    title: string
+    artist: string
+    duration: number
+    image?: string
 }
 
-type GameState = "auth" | "loading" | "playing" | "round-menu"
-
-/* ---------------- Page ---------------- */
+const PLAYLISTS = {
+    playlist1: { label: "🎵 Oldies", color: "bg-blue-600 hover:bg-blue-700" },
+    playlist2: { label: "🇷🇴 Romanian", color: "bg-purple-600 hover:bg-purple-700" },
+    playlist3: { label: "🎁 BONUS!?!?", color: "bg-pink-600 hover:bg-pink-700" },
+}
 
 export default function MusicBingoPage() {
-  const { status } = useSession()
-  const router = useRouter()
-  const searchParams = useSearchParams()
+    const { data: session, status } = useSession()
+    const router = useRouter()
+    const searchParams = useSearchParams()
 
-  const [accessToken, setAccessToken] = useState<string>("")
-  const [songs, setSongs] = useState<Song[]>([])
-  const [currentSong, setCurrentSong] = useState<Song | null>(null)
-  const [round, setRound] = useState(1)
-  const [gameState, setGameState] = useState<GameState>("auth")
-  const [error, setError] = useState<string | null>(null)
+    const [accessToken, setAccessToken] = useState<string>("")
+    const [songs, setSongs] = useState<Song[]>([])
+    const [error, setError] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null)
 
-  /* ---------------- Auth Guard ---------------- */
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push("/auth/signin")
+            return
+        }
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin")
+        const token = searchParams.get("access_token")
+        if (token) {
+            setAccessToken(token)
+            window.history.replaceState({}, document.title, "/music-bingo")
+        }
+    }, [status, router, searchParams])
+
+    const fetchSongs = async (token: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+
+            const res = await fetch("/api/music-bingo/spotify-songs", {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+
+            const data = await res.json()
+
+            if (!res.ok || !data.success) {
+                setError(data.error || "Failed to fetch songs")
+                return
+            }
+
+            setSongs(data.songs)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to fetch songs")
+        } finally {
+            setLoading(false)
+        }
     }
-  }, [status, router])
 
-  /* ---------------- Read Token from URL ---------------- */
+    const loadPlaylist = async (playlistKey: keyof typeof PLAYLISTS) => {
+        try {
+            setLoading(true)
+            setError(null)
 
-  useEffect(() => {
-    const token = searchParams.get("access_token")
-    if (!token) return
+            const res = await fetch(`/api/music-bingo/spotify-songs?playlist=${playlistKey}`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            })
 
-    setAccessToken(token)
-    window.history.replaceState({}, document.title, "/music-bingo")
-    fetchSongs(token)
-  }, [searchParams])
+            const data = await res.json()
 
-  /* ---------------- Fetch Songs ---------------- */
+            if (!res.ok || !data.success) {
+                setError(data.error || "Failed to fetch songs")
+                return
+            }
 
-  const fetchSongs = async (token: string) => {
-    try {
-      setGameState("loading")
-
-      const res = await fetch("/api/music-bingo/spotify-songs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch songs")
-      }
-
-      const data = await res.json()
-      setSongs(data.songs)
-
-      startNewRound(data.songs)
-    } catch (err) {
-      setError("Failed to load songs")
-      setGameState("auth")
+            setSongs(data.songs)
+            setSelectedPlaylist(playlistKey)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to fetch songs")
+        } finally {
+            setLoading(false)
+        }
     }
-  }
 
-  /* ---------------- Game Logic ---------------- */
+    const handleSpotifyLogin = () => {
+        const authUrl = getSpotifyAuthUrl()
+        window.location.href = authUrl
+    }
 
-  const startNewRound = (songList: Song[]) => {
-    const randomSong =
-      songList[Math.floor(Math.random() * songList.length)]
+    if (status === "loading" || loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500">
+                <Loader2 className="h-12 w-12 text-white animate-spin" />
+                <p className="text-white mt-4">Loading...</p>
+            </div>
+        )
+    }
 
-    setCurrentSong(randomSong)
-    setGameState("playing")
-  }
+    if (status === "unauthenticated") return null
 
-  const handleTimeUp = () => {
-    setGameState("round-menu")
-  }
-
-  const handleNextRound = () => {
-    setRound((r) => r + 1)
-    startNewRound(songs)
-  }
-
-  const handleSpotifyLogin = () => {
-    window.location.href = getSpotifyAuthUrl()
-  }
-
-  /* ---------------- Render ---------------- */
-
-  if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin" />
-      </div>
-    )
-  }
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-pink-500 p-6 flex flex-col items-center">
+            <h1 className="text-4xl font-bold text-white mb-6">🎵 Music Bingo</h1>
 
-  return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-purple-500 to-pink-500">
-      <div className="max-w-xl mx-auto space-y-6">
+            {error && (
+                <Card className="p-4 bg-red-500 text-white mb-6">
+                    <p className="font-semibold">Error: {error}</p>
+                </Card>
+            )}
 
-        {/* Header */}
-        <div className="text-center text-white">
-          <h1 className="text-3xl font-bold">🎵 Music Bingo</h1>
-          <p className="opacity-90">
-            {gameState === "auth" && "Connect with Spotify to play"}
-            {gameState === "loading" && "Loading songs…"}
-            {gameState === "playing" && `Round ${round}`}
-            {gameState === "round-menu" && "Time’s up!"}
-          </p>
+            {!accessToken ? (
+                <Card className="p-12 bg-white text-center space-y-6 mb-6">
+                    <Music className="h-16 w-16 mx-auto text-green-500" />
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                        Connect with Spotify
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        Authenticate with Spotify to play Music Bingo.
+                    </p>
+                    <Button
+                        onClick={handleSpotifyLogin}
+                        size="lg"
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                    >
+                        <Music className="h-5 w-5 mr-2" />
+                        Login with Spotify
+                    </Button>
+                </Card>
+            ) : songs.length === 0 ? (
+                <div className="w-full max-w-2xl space-y-6">
+                    {loading && (
+                        <div className="text-center text-white">
+                            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+                            <p>Loading playlist...</p>
+                        </div>
+                    )}
+
+                    {!loading && (
+                        <>
+                            <div className="text-center text-white space-y-2">
+                                <p className="text-lg">Select a playlist to start</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                {Object.entries(PLAYLISTS).map(([key, { label, color }]) => (
+                                    <Button
+                                        key={key}
+                                        onClick={() => loadPlaylist(key as keyof typeof PLAYLISTS)}
+                                        size="lg"
+                                        className={`h-32 text-lg ${color}`}
+                                        disabled={loading}
+                                    >
+                                        {label}
+                                    </Button>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
+            ) : (
+                <div className="w-full">
+                    <div className="max-w-2xl mx-auto mb-6">
+                        <Button
+                            onClick={() => {
+                                setSongs([])
+                                setSelectedPlaylist(null)
+                            }}
+                            className="bg-gray-600 hover:bg-gray-700 text-white"
+                        >
+                            ← Back to Playlist Selection
+                        </Button>
+                    </div>
+                    <SpotifyPlayer
+                        accessToken={accessToken}
+                        songs={songs}
+                        hideInfo={true}
+                        playlistId={selectedPlaylist || undefined}
+                    />
+                </div>
+            )}
         </div>
-
-        {/* Error */}
-        {error && (
-          <Card className="p-4 bg-red-500 text-white">
-            {error}
-          </Card>
-        )}
-
-        {/* Auth */}
-        {gameState === "auth" && (
-          <Card className="p-8 text-center space-y-4">
-            <Music className="mx-auto h-12 w-12 text-green-500" />
-            <Button
-              onClick={handleSpotifyLogin}
-              className="bg-green-500 text-white w-full"
-            >
-              Login with Spotify
-            </Button>
-          </Card>
-        )}
-
-        {/* Loading */}
-        {gameState === "loading" && (
-          <Card className="p-8 text-center">
-            <Loader2 className="animate-spin mx-auto" />
-          </Card>
-        )}
-
-        {/* Player (ALWAYS mounted once token exists) */}
-        {accessToken && (
-          <SpotifyPlayer
-            accessToken={accessToken}
-            trackUri={currentSong?.uri ?? ""}
-          />
-        )}
-
-        {/* Round Menu */}
-        {gameState === "round-menu" && (
-          <Card className="p-6 space-y-4 text-center">
-            <p className="text-lg font-semibold">
-              Round complete
-            </p>
-            <Button onClick={handleNextRound}>
-              Next Round
-            </Button>
-          </Card>
-        )}
-      </div>
-    </div>
-  )
+    )
 }

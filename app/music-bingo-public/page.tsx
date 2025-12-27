@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { useSession } from "next-auth/react"
 import { MusicBingoSimple } from "@/components/music-bingo-simple"
-import { Loader2 } from "lucide-react"
+import { MobileNav } from "@/components/mobile-nav"
+import { Loader2, Home } from "lucide-react"
 
 interface Song {
     id: string
@@ -16,9 +18,9 @@ interface Song {
 }
 
 const PLAYLISTS = {
-    oldies: "1G6Pq34vCBaPzQJaN3UPpr", // Replace with actual ID
-    romanian: "ROMANIAN_PLAYLIST_ID", // Replace with actual ID
-    bonus: "BONUS_PLAYLIST_ID", // Replace with actual ID
+    playlist1: process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID || "", // Replace with actual ID
+    playlist2: process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID_2 || "", // Replace with actual ID
+    playlist3: process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID_3 || "", // Replace with actual ID
 }
 
 export default function MusicBingoPublicPage() {
@@ -54,6 +56,7 @@ export default function MusicBingoPublicPage() {
 
     const selectDeterministicSongs = (allSongs: Song[], seed: string): Song[] => {
         // Use username/date as seed for deterministic shuffle
+        console.log(seed)
         let hash = 0
         for (let i = 0; i < seed.length; i++) {
             const char = seed.charCodeAt(i)
@@ -70,8 +73,9 @@ export default function MusicBingoPublicPage() {
             const j = Math.floor((random / 233280) * (i + 1))
                 ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
         }
-
-        return shuffled.slice(0, 9)
+        const shuf = shuffled.slice(0, 9)
+        console.log(shuf)
+        return shuf
     }
 
     const loadPlaylist = async (playlistKey: keyof typeof PLAYLISTS) => {
@@ -117,9 +121,11 @@ export default function MusicBingoPublicPage() {
                     image: item.track.album.images[0]?.url,
                 }))
                 .filter((song: Song) => song.id)
+                .sort((a, b) => a.id.localeCompare(b.id))
 
             // Select 9 songs deterministically based on user
-            const seed = session?.user?.name || session?.user?.email || new Date().toDateString()
+            // the + playlistKey makes the hash different for each playlist
+            const seed = (session?.user?.name || session?.user?.email || new Date().toDateString()) + playlistKey
             const selected = selectDeterministicSongs(allSongs, seed)
 
             setSongs(selected)
@@ -160,7 +166,7 @@ export default function MusicBingoPublicPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <Button
-                            onClick={() => loadPlaylist("oldies")}
+                            onClick={() => loadPlaylist("playlist1")}
                             size="lg"
                             className="h-32 text-lg bg-blue-600 hover:bg-blue-700"
                             disabled={!accessToken}
@@ -168,7 +174,7 @@ export default function MusicBingoPublicPage() {
                             🎵 Oldies
                         </Button>
                         <Button
-                            onClick={() => loadPlaylist("romanian")}
+                            onClick={() => loadPlaylist("playlist2")}
                             size="lg"
                             className="h-32 text-lg bg-red-600 hover:bg-red-700"
                             disabled={!accessToken}
@@ -176,7 +182,7 @@ export default function MusicBingoPublicPage() {
                             🇷🇴 Romanian
                         </Button>
                         <Button
-                            onClick={() => loadPlaylist("bonus")}
+                            onClick={() => loadPlaylist("playlist3")}
                             size="lg"
                             className="h-32 text-lg bg-yellow-600 hover:bg-yellow-700"
                             disabled={!accessToken}
@@ -191,16 +197,17 @@ export default function MusicBingoPublicPage() {
                         </Card>
                     )}
                 </div>
+                <MobileNav />
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pb-20">
             <div className="max-w-6xl mx-auto">
                 <div className="sticky top-0 bg-white shadow p-4 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">Music Bingo - {selectedPlaylist?.toUpperCase()}</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">Music Bingo - {selectedPlaylist?.toUpperCase()}</h1>
                         <p className="text-sm text-gray-600">{songs.length} songs loaded</p>
                     </div>
                     <Button onClick={() => setSongs([])}>Back to Playlist Selection</Button>
@@ -208,6 +215,7 @@ export default function MusicBingoPublicPage() {
 
                 {accessToken && <MusicBingoSimple songs={songs} accessToken={accessToken} />}
             </div>
+            <MobileNav />
         </div>
     )
 }

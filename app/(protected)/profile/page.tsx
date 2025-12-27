@@ -4,10 +4,11 @@ import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Beer, LogOut } from "lucide-react"
+import { Beer, LogOut, Music } from "lucide-react"
 
 interface UserStats {
   totalPoints: number
@@ -127,6 +128,13 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
+
+            <Button variant="outline" className="w-full mb-2" asChild>
+              <Link href="/music-bingo-public">
+                <Music className="mr-2 h-4 w-4" />
+                Play Music Bingo
+              </Link>
+            </Button>
 
             <Button variant="outline" className="w-full" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />

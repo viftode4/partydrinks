@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 
-// Hardcoded Spotify playlist ID - replace with your desired playlist
-// TODO: Add your playlist ID from environment variables
-const PLAYLIST_ID = process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID || "37i9dQZF1DX4UtSsGT1Sbe" // Default to a public playlist for testing
+// Spotify playlist IDs
+const PLAYLISTS = {
+    playlist1: process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID || "37i9dQZF1DX4UtSsGT1Sbe",
+    playlist2: process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID_2 || "37i9dQZF1DX4UtSsGT1Sbe",
+    playlist3: process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID_3 || "37i9dQZF1DX4UtSsGT1Sbe",
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -17,9 +20,22 @@ export async function GET(request: NextRequest) {
 
         const accessToken = authHeader.substring(7)
 
+        // Get playlist ID from query parameters, default to playlist1
+        const { searchParams } = new URL(request.url)
+        const playlistKey = (searchParams.get("playlist") || "playlist1") as keyof typeof PLAYLISTS
+
+        if (!(playlistKey in PLAYLISTS)) {
+            return NextResponse.json(
+                { error: "Invalid playlist specified" },
+                { status: 400 }
+            )
+        }
+
+        const playlistId = PLAYLISTS[playlistKey]
+
         // Fetch playlist tracks from Spotify API
         const response = await fetch(
-            `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?limit=50`,
+            `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -36,7 +52,7 @@ export async function GET(request: NextRequest) {
             }
             if (response.status === 404) {
                 return NextResponse.json(
-                    { error: "Playlist not found. Check your NEXT_PUBLIC_SPOTIFY_PLAYLIST_ID" },
+                    { error: `Playlist not found for ${playlistKey}. Check your environment variables.` },
                     { status: 404 }
                 )
             }
@@ -58,6 +74,7 @@ export async function GET(request: NextRequest) {
                 })
             )
             .filter((song: any) => song.id) // Filter out any tracks without IDs
+            .sort((a, b) => a.id.localeCompare(b.id))
 
         if (songs.length === 0) {
             return NextResponse.json(
@@ -70,7 +87,8 @@ export async function GET(request: NextRequest) {
             success: true,
             songs,
             total: data.total,
-            playlistId: PLAYLIST_ID,
+            playlistId: playlistId,
+            playlistKey: playlistKey,
         })
     } catch (error) {
         console.error("Error fetching playlist songs:", error)

@@ -115,8 +115,8 @@ export function DrinkModal() {
       }
 
       toast({
-        title: "win Added!",
-        description: "Your win has been counted.",
+        title: "Win Added!",
+        description: "Your victory has been counted.",
       })
 
       onClose()
