@@ -318,7 +318,6 @@ export default function SpotifyPlayer({ accessToken, songs, hideInfo, playlistId
                         <p className="text-lg text-gray-600">{currentSong.artist}</p>
                     </div>
                 )}
-                {hideInfo && currentSong && (<p className="text-lg text-center">Playing song {currentSong.title}</p>)}
 
                 <div className="flex gap-4 flex-wrap justify-center">
                     <Button onClick={handlePrev} disabled={!ready || !songs?.length} size="lg" className="text-lg px-6 py-6">
