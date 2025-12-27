@@ -9,7 +9,7 @@ import type { Tweet, User } from "@/lib/types"
 interface ExtendedTweet extends Tweet {
   user: User
   total_points: number
-  cigarette_count: number
+  win_count: number
 }
 
 export default function TweetsPage() {

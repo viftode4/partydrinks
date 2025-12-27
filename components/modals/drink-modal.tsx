@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { useDrinkModal } from "@/hooks/use-drink-modal"
-import { Beer, Cigarette, Martini, Wine } from "lucide-react"
+import { Beer, Dices, Martini, Wine } from "lucide-react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -90,11 +90,11 @@ export function DrinkModal() {
     }
   }
 
-  const addCigarette = async () => {
+  const addwin = async () => {
     if (!session?.user?.id) {
       toast({
         title: "Authentication Error",
-        description: "You must be signed in to add a cigarette.",
+        description: "You must be signed in to add a win.",
         variant: "destructive",
       })
       return
@@ -103,7 +103,7 @@ export function DrinkModal() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/cigarettes", {
+      const response = await fetch("/api/wins", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,19 +111,19 @@ export function DrinkModal() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to add cigarette")
+        throw new Error("Failed to add win")
       }
 
       toast({
-        title: "Cigarette Added!",
-        description: "Your cigarette has been counted.",
+        title: "Win Added!",
+        description: "Your victory has been counted.",
       })
 
       onClose()
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to add cigarette. Please try again.",
+        description: "Failed to add win. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -169,11 +169,11 @@ export function DrinkModal() {
                 "flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-3 text-white hover:bg-gray-700",
                 isSubmitting && "opacity-50 cursor-not-allowed"
               )}
-              onClick={addCigarette}
+              onClick={addwin}
               disabled={isSubmitting}
             >
-              <Cigarette className="h-5 w-5" />
-              <span className="font-medium">Add Cigarette</span>
+              <Dices className="h-5 w-5" />
+              <span className="font-medium">Add win</span>
             </motion.button>
           </div>
         </div>

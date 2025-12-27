@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabaseServerClient()
 
-    // Add a cigarette count
-    const { data: cigarette, error: cigaretteError } = await supabase
-      .from("cigarettes")
+    // Add a win count
+    const { data: win, error: winError } = await supabase
+      .from("wins")
       .insert([
         {
           user_id: session.user.id,
@@ -25,13 +25,13 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    if (cigaretteError) {
-      return NextResponse.json({ message: "Failed to add cigarette" }, { status: 500 })
+    if (winError) {
+      return NextResponse.json({ message: "Failed to add win" }, { status: 500 })
     }
 
-    return NextResponse.json({ message: "Cigarette added successfully", cigarette }, { status: 201 })
+    return NextResponse.json({ message: "Win added successfully", win }, { status: 201 })
   } catch (error) {
-    console.error("Add cigarette error:", error)
+    console.error("Add win error:", error)
     return NextResponse.json({ message: "Internal server error" }, { status: 500 })
   }
 }

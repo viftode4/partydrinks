@@ -78,12 +78,12 @@ export async function addDrink(userId: string, drinkType: Database['public']['Ta
   return data
 }
 
-// Cigarette operations
-export async function addCigarette(userId: string, count: number = 1) {
+// win operations
+export async function addwin(userId: string, count: number = 1) {
   const supabase = getSupabaseServerClient()
   
   const { data, error } = await supabase
-    .from('cigarettes')
+    .from('wins')
     .insert({
       user_id: userId,
       count
@@ -114,7 +114,7 @@ export async function createTweet(userId: string, content: string, imageUrl?: st
 }
 
 // Leaderboard operations
-export async function getLeaderboard(filterCigarettes?: boolean) {
+export async function getLeaderboard(filterwins?: boolean) {
   const supabase = getSupabaseServerClient()
   
   let query = supabase
@@ -122,8 +122,8 @@ export async function getLeaderboard(filterCigarettes?: boolean) {
     .select('*')
     .order('total_points', { ascending: false })
   
-  if (filterCigarettes) {
-    query = query.gt('cigarette_count', 0)
+  if (filterwins) {
+    query = query.gt('win_count', 0)
   }
   
   const { data, error } = await query

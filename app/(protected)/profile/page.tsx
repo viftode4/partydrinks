@@ -4,15 +4,16 @@ import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Beer, LogOut } from "lucide-react"
+import { Beer, LogOut, Music } from "lucide-react"
 
 interface UserStats {
   totalPoints: number
   totalDrinks: number
-  cigaretteCount: number
+  winCount: number
   drinkTypes: {
     [key: string]: number
   }
@@ -24,7 +25,7 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<UserStats>({
     totalPoints: 0,
     totalDrinks: 0,
-    cigaretteCount: 0,
+    winCount: 0,
     drinkTypes: {},
   })
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +42,7 @@ export default function ProfilePage() {
           setStats({
             totalPoints: data.totalPoints || 0,
             totalDrinks: data.totalDrinks || 0,
-            cigaretteCount: data.cigaretteCount || 0,
+            winCount: data.winCount || 0,
             drinkTypes: data.drinkTypes || {},
           })
         }
@@ -93,11 +94,11 @@ export default function ProfilePage() {
                 )}
               </div>
               <div className="rounded-lg bg-muted p-3 text-center">
-                <h3 className="text-sm font-medium text-muted-foreground">Cigarettes</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">wins</h3>
                 {isLoading ? (
                   <div className="h-6 w-12 animate-pulse bg-muted-foreground/20 rounded mx-auto mt-1" />
                 ) : (
-                  <p className="text-2xl font-bold">{stats.cigaretteCount}</p>
+                  <p className="text-2xl font-bold">{stats.winCount}</p>
                 )}
               </div>
             </div>
@@ -127,6 +128,13 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
+
+            <Button variant="outline" className="w-full mb-2" asChild>
+              <Link href="/music-bingo-public">
+                <Music className="mr-2 h-4 w-4" />
+                Play Music Bingo
+              </Link>
+            </Button>
 
             <Button variant="outline" className="w-full" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />

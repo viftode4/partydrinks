@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronsUpDown, Cigarette } from "lucide-react"
+import { Check, ChevronsUpDown, Dices } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 interface LeaderboardFilterProps {
-  onChange: (includeCigarettes: boolean) => void
+  onChange: (includewins: boolean) => void
 }
 
 export function LeaderboardFilter({ onChange }: LeaderboardFilterProps) {
@@ -17,17 +17,17 @@ export function LeaderboardFilter({ onChange }: LeaderboardFilterProps) {
 
   const options = [
     { value: "all", label: "All Users" },
-    { value: "nonSmokers", label: "Non-Smokers" },
-    { value: "smokers", label: "Smokers Only" },
+    { value: "nonChamps", label: "Non-Champs" },
+    { value: "champs", label: "Champs Only" },
   ]
 
   const handleSelect = (currentValue: string) => {
     setValue(currentValue)
     setOpen(false)
 
-    if (currentValue === "smokers") {
+    if (currentValue === "champs") {
       onChange(true)
-    } else if (currentValue === "nonSmokers") {
+    } else if (currentValue === "nonChamps") {
       onChange(false)
     } else {
       onChange(true) // Default to showing all
@@ -54,7 +54,7 @@ export function LeaderboardFilter({ onChange }: LeaderboardFilterProps) {
                   <CommandItem key={option.value} onSelect={() => handleSelect(option.value)}>
                     <Check className={cn("mr-2 h-4 w-4", value === option.value ? "opacity-100" : "opacity-0")} />
                     <div className="flex items-center">
-                      {option.value === "smokers" && <Cigarette className="mr-2 h-4 w-4" />}
+                      {option.value === "champs" && <Dices className="mr-2 h-4 w-4" />}
                       {option.label}
                     </div>
                   </CommandItem>

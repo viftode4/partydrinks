@@ -22,7 +22,7 @@ interface ExtendedTweet {
     profile_image_url: string
   }
   total_points: number
-  cigarette_count: number
+  win_count: number
 }
 
 export default function ProjectorPage() {
@@ -39,7 +39,7 @@ export default function ProjectorPage() {
         setError(null)
         
         // Fetch leaderboard
-        const leaderboardResponse = await fetch("/api/leaderboard?includeCigarettes=true")
+        const leaderboardResponse = await fetch("/api/leaderboard?includewins=true")
         if (!leaderboardResponse.ok) {
           throw new Error(`Failed to fetch leaderboard: ${leaderboardResponse.statusText}`)
         }

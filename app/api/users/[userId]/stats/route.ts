@@ -23,10 +23,10 @@ export async function GET(
 
     const supabase = getSupabaseServerClient()
 
-    // Get user's total points and cigarette count from leaderboard
+    // Get user's total points and win count from leaderboard
     const { data: leaderboardStats, error: leaderboardError } = await supabase
       .from("leaderboard")
-      .select("total_points, cigarette_count")
+      .select("total_points, win_count")
       .eq("user_id", userId)
       .single()
 
@@ -55,7 +55,7 @@ export async function GET(
     return NextResponse.json({
       totalPoints: leaderboardStats?.total_points || 0,
       totalDrinks: drinks?.length || 0,
-      cigaretteCount: leaderboardStats?.cigarette_count || 0,
+      winCount: leaderboardStats?.win_count || 0,
       drinkTypes
     })
   } catch (error) {

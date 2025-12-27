@@ -5,7 +5,7 @@ import type { LeaderboardUser } from "@/lib/types"
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const includeCigarettes = searchParams.get("includeCigarettes") === "true"
+    const includewins = searchParams.get("includewins") === "true"
 
     const supabase = getSupabaseServerClient()
 
@@ -32,41 +32,41 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "Failed to fetch drink points" }, { status: 500 })
     }
 
-    // Get cigarette counts for each user
-    const { data: cigaretteCounts, error: cigaretteError } = await supabase.from("cigarettes").select(`
+    // Get win counts for each user
+    const { data: winCounts, error: winError } = await supabase.from("wins").select(`
         user_id,
         count
       `)
 
-    if (cigaretteError) {
-      console.error("Failed to fetch cigarette counts:", cigaretteError)
-      return NextResponse.json({ message: "Failed to fetch cigarette counts" }, { status: 500 })
+    if (winError) {
+      console.error("Failed to fetch win counts:", winError)
+      return NextResponse.json({ message: "Failed to fetch win counts" }, { status: 500 })
     }
 
-    // Calculate total points and cigarette counts for each user
+    // Calculate total points and win counts for each user
     const leaderboardUsers: LeaderboardUser[] = users.map((user) => {
       const userDrinks = drinkPoints.filter((drink) => drink.user_id === user.id)
       const totalPoints = userDrinks.reduce((sum, drink) => sum + drink.points, 0)
 
-      const userCigarettes = cigaretteCounts.filter((cig) => cig.user_id === user.id)
-      const cigaretteCount = userCigarettes.reduce((sum, cig) => sum + cig.count, 0)
+      const userwins = winCounts.filter((cig) => cig.user_id === user.id)
+      const winCount = userwins.reduce((sum, cig) => sum + cig.count, 0)
 
       return {
         id: user.id,
         username: user.username,
         image_url: user.profile_image_url,
         total_points: totalPoints,
-        cigarette_count: cigaretteCount,
+        win_count: winCount,
         rank: 0, // Will be set after sorting
       }
     })
 
     console.log("API - Users before filtering:", JSON.stringify(leaderboardUsers, null, 2))
 
-    // Filter users based on cigarette counts if specified
-    const filteredUsers = includeCigarettes
+    // Filter users based on win counts if specified
+    const filteredUsers = includewins
       ? leaderboardUsers
-      : leaderboardUsers.filter((user) => user.cigarette_count === 0)
+      : leaderboardUsers.filter((user) => user.win_count === 0)
 
     console.log("API - Users after filtering:", JSON.stringify(filteredUsers, null, 2))
 

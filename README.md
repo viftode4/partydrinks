@@ -10,15 +10,15 @@ Vibe coded in 4hrs. ⏱️
 
 - **Real-time Leaderboard** 📊: See who's leading the pack with automatic updates every 5 seconds
 - **Tweet Wall** 🐦: Share your drinking moments with the party crew
-- **Drink Tracking** 🍺🍷🍸: Log beers, wines, cocktails, and even cigarettes (if you're into that) 🚬
+- **Drink Tracking** 🍺🍷🍸: Log beers, wines, cocktails, and even wins (if you're into that) 🚬
 - **Projector Mode** 📽️: Display the leaderboard on a big screen for maximum competitive spirit
 
 ## 🔍 How to use
 
-   1. Deploy 🚀
-   2. Make users register with username pass image all required 📝
-   3. Put `/projector` on a big screen 📺
-   4. Profit 💰✨
+1.  Deploy 🚀
+2.  Make users register with username pass image all required 📝
+3.  Put `/projector` on a big screen 📺
+4.  Profit 💰✨
 
 ## 🚀 Deployment
 
@@ -33,6 +33,7 @@ This app can be deployed in minutes on [Vercel](https://vercel.com) with [Supaba
 ### Steps 👣
 
 1. Clone this repo 📂
+
    ```bash
    git clone https://github.com/yourusername/partydrinks.git
    cd partydrinks
@@ -41,6 +42,7 @@ This app can be deployed in minutes on [Vercel](https://vercel.com) with [Supaba
 2. Create a new Supabase project and set it up. Reference the [/SUPABASE_SETUP.md](/SUPABASE_SETUP.md) file for DB schema and stuff. 💾
 
 3. Install dependencies and run locally: 💻
+
    ```bash
    pnpm / npm install
    pnpm / npm run dev
@@ -68,6 +70,7 @@ NEXTAUTH_SECRET="Very Nice Pass"
 ## 👨‍💻 Development
 
 This app is built with: 🛠️
+
 - Next.js ⚛️
 - Supabase 🔥
 - Framer Motion for those sweet animations ✨
@@ -90,6 +93,7 @@ Contributions are welcome! Add new features, improve the UI, or suggest new drin
 - Hangover prediction algorithm (still in research phase 🤕) (for Alex) 📊💊
 - Multiplier based on how frequent you drink. ⏱️✖️
 - Cheater prevention (Albert)
+
 ---
 
-**Remember:** With great drinking comes great responsibility. Party on, but stay safe! 🎵🎮🎯🚫🚗🥤 
+**Remember:** With great drinking comes great responsibility. Party on, but stay safe! 🎵🎮🎯🚫🚗🥤

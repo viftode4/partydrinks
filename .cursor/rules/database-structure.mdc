@@ -3,6 +3,7 @@ description:
 globs:
 alwaysApply: false
 ---
+
 # Database Structure
 
 The application uses Supabase as its database and storage solution. The database schema is defined in [types/supabase.ts](mdc:types/supabase.ts).
@@ -10,6 +11,7 @@ The application uses Supabase as its database and storage solution. The database
 ## Tables
 
 ### users
+
 - `id`: UUID (primary key)
 - `username`: TEXT (unique)
 - `password_hash`: TEXT (bcrypt hashed)
@@ -17,23 +19,27 @@ The application uses Supabase as its database and storage solution. The database
 - `created_at`: TIMESTAMP
 
 ### drink_points
+
 - `drink_type`: TEXT (primary key, enum: 'Beer', 'Wine', 'Cocktail', 'Shot')
 - `points`: INTEGER
 
 ### drinks
+
 - `id`: UUID (primary key)
 - `user_id`: UUID (foreign key to users.id)
 - `drink_type`: TEXT (foreign key to drink_points.drink_type)
 - `points`: INTEGER
 - `created_at`: TIMESTAMP
 
-### cigarettes
+### wins
+
 - `id`: UUID (primary key)
 - `user_id`: UUID (foreign key to users.id)
 - `count`: INTEGER
 - `created_at`: TIMESTAMP
 
 ### tweets
+
 - `id`: UUID (primary key)
 - `user_id`: UUID (foreign key to users.id)
 - `content`: TEXT (max 300 chars)
@@ -43,8 +49,9 @@ The application uses Supabase as its database and storage solution. The database
 ## Views
 
 ### leaderboard
-- Combines users, drinks, and cigarettes data
-- Shows total points and cigarette count per user
+
+- Combines users, drinks, and wins data
+- Shows total points and win count per user
 
 ## Storage Buckets
 
@@ -54,8 +61,9 @@ The application uses Supabase as its database and storage solution. The database
 ## Database Operations
 
 All database operations are handled through utility functions in [lib/db.ts](mdc:lib/db.ts), including:
+
 - User registration and authentication
-- Drink and cigarette tracking
+- Drink and win tracking
 - Tweet creation
 - Leaderboard retrieval
 

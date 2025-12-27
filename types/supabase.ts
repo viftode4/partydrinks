@@ -55,7 +55,7 @@ export interface Database {
           created_at?: string
         }
       }
-      cigarettes: {
+      wins: {
         Row: {
           id: string
           user_id: string
@@ -120,7 +120,7 @@ export interface Database {
           username: string
           profile_image_url: string
           total_points: number
-          cigarette_count: number
+          win_count: number
         }
       }
     }
