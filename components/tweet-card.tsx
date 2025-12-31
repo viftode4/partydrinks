@@ -24,7 +24,7 @@ export function TweetCard({ tweet }: TweetCardProps) {
       transition={{ duration: 0.3 }}
       className="w-full"
     >
-      <Card className="mb-4 bg-gradient-to-br from-midnight-100 to-midnight-50 border-gold-500/10 hover:border-gold-500/20 transition-colors">
+      <Card className="mb-3 bg-gradient-to-br from-midnight-100 to-midnight-50 border-gold-500/10 hover:border-gold-500/20 transition-colors rounded-lg">
         <CardHeader className="flex flex-row items-center gap-3 p-4 pb-0">
           <Avatar className="ring-2 ring-gold-500/30">
             <AvatarImage src={tweet.user.profile_image_url || "/placeholder.svg"} alt={tweet.user.username} />

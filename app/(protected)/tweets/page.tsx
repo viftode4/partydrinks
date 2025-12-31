@@ -42,7 +42,7 @@ export default function TweetsPage() {
   }, [])
 
   return (
-    <div className="container max-w-full sm:max-w-xl mx-auto px-3 sm:px-4 py-4">
+    <div className="w-full px-2 sm:container sm:max-w-xl sm:mx-auto sm:px-4 py-4">
       <div className="flex items-center justify-center gap-2 mb-4">
         <span className="text-2xl animate-float">🎊</span>
         <h2 className="text-xl font-bold bg-gradient-to-r from-gold-400 to-champagne-200 bg-clip-text text-transparent">Party Tweets</h2>
