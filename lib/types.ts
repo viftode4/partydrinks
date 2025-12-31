@@ -42,6 +42,7 @@ export interface LeaderboardUser {
   cigarette_count: number
   rank: number
   previousRank?: number
+  champions?: string[]  // Drink types user is #1 in (e.g., ["Beer", "Wine"])
 }
 
 export interface DrinkPoints {

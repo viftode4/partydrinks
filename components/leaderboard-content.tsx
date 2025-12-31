@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { LeaderboardUserCard } from "@/components/leaderboard-user-card"
 import { LeaderboardFilter } from "@/components/leaderboard-filter"
@@ -14,26 +14,28 @@ export default function LeaderboardContent() {
   const { data: session } = useSession()
   const [users, setUsers] = useState<LeaderboardUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [includeCigarettes, setIncludeCigarettes] = useState(true)
+  const [drinkType, setDrinkType] = useState("all")
   const { onOpen } = useDrinkModal()
+  const usersRef = useRef<LeaderboardUser[]>([])
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/leaderboard?includeCigarettes=${includeCigarettes}`)
+        const response = await fetch(`/api/leaderboard?drinkType=${drinkType}`)
         if (response.ok) {
           const data = await response.json()
 
           // Store previous ranks before updating
           const updatedData = data.map((user: LeaderboardUser) => {
-            const existingUser = users.find((u) => u.id === user.id)
+            const existingUser = usersRef.current.find((u) => u.id === user.id)
             return {
               ...user,
               previousRank: existingUser?.rank || user.rank,
             }
           })
 
+          usersRef.current = updatedData
           setUsers(updatedData)
         }
       } catch (error) {
@@ -49,10 +51,10 @@ export default function LeaderboardContent() {
     const intervalId = setInterval(fetchLeaderboard, 10000) // Poll every 10 seconds
 
     return () => clearInterval(intervalId)
-  }, [includeCigarettes, users])
+  }, [drinkType])
 
-  const handleFilterChange = (includeSmoke: boolean) => {
-    setIncludeCigarettes(includeSmoke)
+  const handleFilterChange = (type: string) => {
+    setDrinkType(type)
   }
 
   return (

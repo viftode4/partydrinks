@@ -1,69 +1,50 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronsUpDown, Cigarette } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Beer, Wine, Martini, Cigarette, Trophy } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface LeaderboardFilterProps {
-  onChange: (includeCigarettes: boolean) => void
+  onChange: (drinkType: string) => void
 }
 
+const TABS = [
+  { value: "all", label: "All", icon: Trophy, emoji: "🏆" },
+  { value: "Beer", label: "Beer", icon: Beer, emoji: "🍺" },
+  { value: "Wine", label: "Wine", icon: Wine, emoji: "🍷" },
+  { value: "Cocktail", label: "Cocktails", icon: Martini, emoji: "🍸" },
+  { value: "Shot", label: "Shots", icon: Martini, emoji: "🥃" },
+  { value: "cigarettes", label: "Cigs", icon: Cigarette, emoji: "🚬" },
+]
+
 export function LeaderboardFilter({ onChange }: LeaderboardFilterProps) {
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("all")
+  const [selected, setSelected] = useState("all")
 
-  const options = [
-    { value: "all", label: "All Users" },
-    { value: "nonSmokers", label: "Non-Smokers" },
-    { value: "smokers", label: "Smokers Only" },
-  ]
-
-  const handleSelect = (currentValue: string) => {
-    setValue(currentValue)
-    setOpen(false)
-
-    if (currentValue === "smokers") {
-      onChange(true)
-    } else if (currentValue === "nonSmokers") {
-      onChange(false)
-    } else {
-      onChange(true) // Default to showing all
-    }
+  const handleSelect = (value: string) => {
+    setSelected(value)
+    onChange(value)
   }
 
   return (
-    <div className="flex items-center justify-between pb-4">
-      <h2 className="text-lg font-bold">Leaderboard</h2>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline" role="combobox" aria-expanded={open} className="w-48 justify-between">
-            {value ? options.find((option) => option.value === value)?.label : "Filter"}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-48 p-0">
-          <Command>
-            <CommandInput placeholder="Search filter..." />
-            <CommandList>
-              <CommandEmpty>No filter found.</CommandEmpty>
-              <CommandGroup>
-                {options.map((option) => (
-                  <CommandItem key={option.value} onSelect={() => handleSelect(option.value)}>
-                    <Check className={cn("mr-2 h-4 w-4", value === option.value ? "opacity-100" : "opacity-0")} />
-                    <div className="flex items-center">
-                      {option.value === "smokers" && <Cigarette className="mr-2 h-4 w-4" />}
-                      {option.label}
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+    <div className="mb-4 -mx-2 px-2 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-2 min-w-max pb-2">
+        {TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => handleSelect(tab.value)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all",
+              "border whitespace-nowrap",
+              selected === tab.value
+                ? "bg-gradient-to-r from-gold-500 to-gold-600 text-midnight border-gold-500 shadow-lg shadow-gold-500/20"
+                : "bg-midnight-50 text-champagne-300 border-gold-500/20 hover:border-gold-500/40 hover:bg-midnight"
+            )}
+          >
+            <span className="text-base">{tab.emoji}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

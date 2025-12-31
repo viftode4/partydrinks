@@ -20,8 +20,17 @@ const getMedalEmoji = (rank: number) => {
   return null
 }
 
+const CHAMPION_EMOJIS: Record<string, string> = {
+  Beer: "🍺",
+  Wine: "🍷",
+  Cocktail: "🍸",
+  Shot: "🥃",
+  Cigarette: "🚬",
+}
+
 export function LeaderboardUserCard({ user, isCurrentUser }: LeaderboardUserCardProps) {
   const medal = getMedalEmoji(user.rank)
+  const champions = user.champions || []
 
   return (
     <motion.div
@@ -83,14 +92,29 @@ export function LeaderboardUserCard({ user, isCurrentUser }: LeaderboardUserCard
           </div>
         </div>
         <div className="flex flex-col flex-grow min-w-0">
-          <p className={cn(
-            "truncate font-bold mb-1",
-            user.rank <= 3 ? "text-xl" : "text-lg",
-            user.rank === 1 && "text-gold-400",
-            user.rank === 2 && "text-gray-300",
-            user.rank === 3 && "text-amber-500",
-            user.rank > 3 && "text-champagne-100"
-          )}>{user.username}</p>
+          <div className="flex items-center gap-2 mb-1">
+            <p className={cn(
+              "truncate font-bold",
+              user.rank <= 3 ? "text-xl" : "text-lg",
+              user.rank === 1 && "text-gold-400",
+              user.rank === 2 && "text-gray-300",
+              user.rank === 3 && "text-amber-500",
+              user.rank > 3 && "text-champagne-100"
+            )}>{user.username}</p>
+            {champions.length > 0 && (
+              <div className="flex gap-1">
+                {champions.map((type) => (
+                  <span
+                    key={type}
+                    className="text-sm bg-gold-500/20 px-1.5 py-0.5 rounded-full border border-gold-500/30"
+                    title={`${type} Champion`}
+                  >
+                    {CHAMPION_EMOJIS[type] || "👑"}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-6">
             <motion.div
               className="flex items-center gap-2"
