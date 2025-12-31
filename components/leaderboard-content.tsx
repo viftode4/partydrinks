@@ -5,17 +5,12 @@ import { useSession } from "next-auth/react"
 import { LeaderboardUserCard } from "@/components/leaderboard-user-card"
 import { LeaderboardFilter } from "@/components/leaderboard-filter"
 import type { LeaderboardUser } from "@/lib/types"
-import { useDrinkModal } from "@/hooks/use-drink-modal"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import { motion } from "framer-motion"
 
 export default function LeaderboardContent() {
   const { data: session } = useSession()
   const [users, setUsers] = useState<LeaderboardUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [drinkType, setDrinkType] = useState("all")
-  const { onOpen } = useDrinkModal()
   const usersRef = useRef<LeaderboardUser[]>([])
 
   useEffect(() => {
@@ -88,16 +83,6 @@ export default function LeaderboardContent() {
         )}
       </div>
 
-      <motion.div
-        className="fixed bottom-24 right-6 md:bottom-6"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <Button size="lg" className="h-14 w-14 rounded-full bg-gradient-to-br from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-midnight shadow-xl shadow-gold-500/30 hover:shadow-gold-500/50 transition-all" onClick={onOpen}>
-          <Plus className="h-6 w-6" />
-          <span className="sr-only">Add Drink</span>
-        </Button>
-      </motion.div>
     </div>
   )
 }
