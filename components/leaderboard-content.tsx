@@ -56,7 +56,18 @@ export default function LeaderboardContent() {
   }
 
   return (
-    <div className="container max-w-md mx-auto p-4">
+    <div className="container max-w-full sm:max-w-xl mx-auto px-3 sm:px-4 py-4">
+      <div className="mb-6 text-center">
+        <div className="flex justify-center items-center gap-3 mb-2">
+          <span className="text-3xl animate-float">🏆</span>
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-gold-400 to-champagne-200 bg-clip-text text-transparent">
+            New Year&apos;s Leaderboard
+          </h1>
+          <span className="text-3xl animate-float" style={{ animationDelay: "0.5s" }}>🎊</span>
+        </div>
+        <p className="text-champagne-300 text-sm">Who&apos;s celebrating the hardest? 🥂</p>
+      </div>
+
       <LeaderboardFilter onChange={handleFilterChange} />
 
       <div className="space-y-3">
@@ -80,7 +91,7 @@ export default function LeaderboardContent() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <Button size="lg" className="h-14 w-14 rounded-full bg-pink-600 hover:bg-pink-700 shadow-lg" onClick={onOpen}>
+        <Button size="lg" className="h-14 w-14 rounded-full bg-gradient-to-br from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-midnight shadow-xl shadow-gold-500/30 hover:shadow-gold-500/50 transition-all" onClick={onOpen}>
           <Plus className="h-6 w-6" />
           <span className="sr-only">Add Drink</span>
         </Button>

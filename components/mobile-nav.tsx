@@ -17,7 +17,7 @@ export function MobileNav() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t bg-background md:hidden">
+    <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gold-500/20 bg-background md:hidden">
       <div className="mx-auto grid h-full max-w-lg grid-cols-4">
         <Link href="/leaderboard" className="group inline-flex flex-col items-center justify-center px-5">
           <Button
@@ -46,7 +46,7 @@ export function MobileNav() {
         </Link>
 
         <button onClick={onOpen} className="group inline-flex flex-col items-center justify-center px-5">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-pink-600 text-white">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-gold-500 to-gold-600 text-midnight shadow-lg shadow-gold-500/30 hover:shadow-gold-500/50 transition-shadow">
             <Plus className="h-6 w-6" />
             <span className="sr-only">Add Drink</span>
           </div>

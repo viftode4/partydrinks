@@ -10,10 +10,10 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const DRINK_TYPES = [
-  { type: "Beer", icon: Beer, color: "bg-yellow-500", hoverColor: "hover:bg-yellow-600" },
-  { type: "Cocktail", icon: Martini, color: "bg-pink-500", hoverColor: "hover:bg-pink-600" },
-  { type: "Wine", icon: Wine, color: "bg-red-500", hoverColor: "hover:bg-red-600" },
-  { type: "Shot", icon: Martini, color: "bg-purple-500", hoverColor: "hover:bg-purple-600" },
+  { type: "Beer", icon: Beer, color: "bg-gradient-to-br from-gold-500 to-gold-600", hoverColor: "hover:from-gold-400 hover:to-gold-500", textColor: "text-midnight", emoji: "🍺" },
+  { type: "Cocktail", icon: Martini, color: "bg-gradient-to-br from-pink-500 to-pink-600", hoverColor: "hover:from-pink-400 hover:to-pink-500", textColor: "text-white", emoji: "🍸" },
+  { type: "Wine", icon: Wine, color: "bg-gradient-to-br from-red-600 to-red-700", hoverColor: "hover:from-red-500 hover:to-red-600", textColor: "text-white", emoji: "🍷" },
+  { type: "Shot", icon: Martini, color: "bg-gradient-to-br from-amber-500 to-amber-600", hoverColor: "hover:from-amber-400 hover:to-amber-500", textColor: "text-midnight", emoji: "🥃" },
 ]
 
 export function DrinkModal() {
@@ -133,49 +133,51 @@ export function DrinkModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-gradient-to-b from-midnight to-midnight-100 border-gold-500/20">
         <DialogHeader>
-          <DialogTitle className="text-center text-xl font-bold">Add to your score</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-bold text-gold-400">
+            🎉 Add to your score 🎉
+          </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-6">
+        <div className="grid gap-6 py-2">
           <div className="grid grid-cols-2 gap-4">
             {DRINK_TYPES.map((drink) => {
               const isDisabled = isSubmitting || (Date.now() - (lastDrinkTime[drink.type] || 0) < 5000)
               return (
                 <motion.button
                   key={drink.type}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-lg p-4 text-white transition-colors",
+                    "flex flex-col items-center justify-center rounded-xl p-5 transition-all shadow-lg",
                     drink.color,
                     drink.hoverColor,
+                    drink.textColor,
                     isDisabled && "opacity-50 cursor-not-allowed"
                   )}
                   onClick={() => addDrink(drink.type)}
                   disabled={isDisabled}
                 >
-                  <drink.icon className="mb-2 h-8 w-8" />
-                  <span className="font-medium">{drink.type}</span>
+                  <span className="text-3xl mb-2">{drink.emoji}</span>
+                  <drink.icon className="mb-1 h-6 w-6" />
+                  <span className="font-semibold">{drink.type}</span>
                 </motion.button>
               )
             })}
           </div>
-          <div className="flex justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "flex items-center gap-2 rounded-lg bg-gray-600 px-4 py-3 text-white hover:bg-gray-700",
-                isSubmitting && "opacity-50 cursor-not-allowed"
-              )}
-              onClick={addCigarette}
-              disabled={isSubmitting}
-            >
-              <Cigarette className="h-5 w-5" />
-              <span className="font-medium">Add Cigarette</span>
-            </motion.button>
-          </div>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={cn(
+              "flex items-center justify-center gap-3 rounded-lg bg-midnight-50 border border-gold-500/20 px-6 py-4 text-champagne-200 hover:bg-midnight hover:border-gold-500/40 transition-all",
+              isSubmitting && "opacity-50 cursor-not-allowed"
+            )}
+            onClick={addCigarette}
+            disabled={isSubmitting}
+          >
+            <Cigarette className="h-5 w-5" />
+            <span className="font-medium">Add Cigarette</span>
+          </motion.button>
         </div>
       </DialogContent>
     </Dialog>

@@ -52,6 +52,32 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // New Year festive colors
+        gold: {
+          50: "#FFFBEB",
+          100: "#FEF3C7",
+          200: "#FDE68A",
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#FFD700",
+          600: "#D4AF37",
+          700: "#B8860B",
+          800: "#8B6914",
+          900: "#6B5000",
+        },
+        champagne: {
+          50: "#FEFCF3",
+          100: "#FDF8E7",
+          200: "#F7E7CE",
+          300: "#EDD9B5",
+          400: "#E3CB9C",
+        },
+        midnight: {
+          DEFAULT: "#0F172A",
+          50: "#1E293B",
+          100: "#151D2E",
+          200: "#0F172A",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -67,10 +93,25 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" },
+        },
+        sparkle: {
+          "0%, 100%": { opacity: "0.3", transform: "scale(0.8)" },
+          "50%": { opacity: "1", transform: "scale(1.2)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        shimmer: "shimmer 3s linear infinite",
+        sparkle: "sparkle 2s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
       },
     },
   },

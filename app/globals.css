@@ -10,10 +10,10 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 346.8 77.2% 49.8%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --primary: 45 100% 50%;
+    --primary-foreground: 220 20% 10%;
+    --secondary: 38 40% 80%;
+    --secondary-foreground: 220 20% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
@@ -22,35 +22,99 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 346.8 77.2% 49.8%;
+    --ring: 45 100% 50%;
     --radius: 0.5rem;
-    --chart-1: 346.8 77.2% 49.8%;
-    --chart-2: 262.1 83.3% 57.8%;
+    --chart-1: 45 100% 50%;
+    --chart-2: 38 40% 80%;
     --chart-3: 221.2 83.2% 53.3%;
     --chart-4: 42.2 93.5% 57.5%;
+
+    /* New Year specific colors */
+    --gold: 45 100% 50%;
+    --champagne: 38 40% 80%;
+    --midnight: 220 25% 8%;
+    --sparkle: 45 100% 70%;
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 346.8 77.2% 49.8%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 0 0% 98%;
+    /* Warm dark background - deep midnight */
+    --background: 220 20% 6%;
+    --foreground: 45 30% 95%;
+
+    /* Card backgrounds - warmer dark tones */
+    --card: 220 15% 10%;
+    --card-foreground: 45 30% 95%;
+
+    /* Popover */
+    --popover: 220 18% 8%;
+    --popover-foreground: 45 30% 95%;
+
+    /* Primary - GOLD */
+    --primary: 45 100% 50%;
+    --primary-foreground: 220 20% 10%;
+
+    /* Secondary - Champagne */
+    --secondary: 38 40% 80%;
+    --secondary-foreground: 220 20% 10%;
+
+    /* Muted */
+    --muted: 220 15% 15%;
+    --muted-foreground: 45 20% 60%;
+
+    /* Accent - warm bronze */
+    --accent: 35 45% 25%;
+    --accent-foreground: 45 30% 95%;
+
+    /* Keep destructive red */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 346.8 77.2% 49.8%;
+
+    /* Borders - subtle gold tint */
+    --border: 45 15% 20%;
+    --input: 45 15% 20%;
+    --ring: 45 100% 50%;
+
+    /* New Year specific colors */
+    --gold: 45 100% 50%;
+    --champagne: 38 40% 80%;
+    --midnight: 220 25% 8%;
+    --sparkle: 45 100% 70%;
   }
+}
+
+/* Festive animations */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--gold)) 0%,
+    hsl(var(--sparkle)) 50%,
+    hsl(var(--gold)) 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+
+.sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
 }
 
 @layer base {

@@ -145,38 +145,38 @@ export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
   }
 
   return (
-    <Card className="mb-6 overflow-hidden">
+    <Card className="mb-6 overflow-hidden bg-gradient-to-br from-midnight-100 to-midnight-50 border-gold-500/20">
       <form onSubmit={handleSubmit}>
         <CardContent className="p-4">
-          <div className="rounded-lg border bg-background">
+          <div className="rounded-lg border border-gold-500/20 bg-midnight-50">
             <Textarea
-              placeholder="What's happening at the party? (300 characters max)"
+              placeholder="What's happening at the party? 🎉 (300 characters max)"
               value={content}
               onChange={handleContentChange}
-              className="min-h-[100px] resize-none border-0 focus-visible:ring-0 p-3"
+              className="min-h-[100px] resize-none border-0 focus-visible:ring-0 p-3 bg-transparent text-champagne-100 placeholder:text-champagne-300/50"
             />
-            <div className="flex justify-between items-center px-3 py-2 border-t">
+            <div className="flex justify-between items-center px-3 py-2 border-t border-gold-500/20">
               <div className="flex items-center gap-2">
                 <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
-                <Button 
-                  type="button" 
-                  size="sm" 
-                  variant="ghost" 
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-champagne-300 hover:text-gold-400 hover:bg-gold-500/10"
                 >
                   <Camera className="h-4 w-4 mr-1" />
                   Photo
                 </Button>
               </div>
-              <div className={`text-xs ${content.length > MAX_CHARS * 0.9 ? "text-amber-500" : "text-muted-foreground"}`}>
+              <div className={`text-xs ${content.length > MAX_CHARS * 0.9 ? "text-gold-500" : "text-champagne-300/60"}`}>
                 {content.length}/{MAX_CHARS}
               </div>
             </div>
           </div>
-          
+
           {imagePreview && (
-            <div className="relative mt-3 rounded-lg overflow-hidden border">
+            <div className="relative mt-3 rounded-lg overflow-hidden border border-gold-500/20">
               <div className="aspect-video relative">
                 <Image
                   src={imagePreview}
@@ -197,16 +197,16 @@ export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
             </div>
           )}
         </CardContent>
-        
+
         <CardFooter className="px-4 pb-4 pt-0 flex justify-end">
           <Button
             type="submit"
             disabled={isSubmitting || content.length === 0}
-            className="bg-pink-500 hover:bg-pink-600"
+            className="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-midnight font-semibold shadow-lg shadow-gold-500/20"
           >
             {isSubmitting ? (
               <span className="flex items-center">
-                <span className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                <span className="animate-spin mr-2 h-4 w-4 border-2 border-midnight border-t-transparent rounded-full" />
                 Posting...
               </span>
             ) : (
