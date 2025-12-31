@@ -53,14 +53,14 @@ export function TweetCard({ tweet }: TweetCardProps) {
           <p className="whitespace-pre-wrap break-words text-champagne-100">{tweet.content}</p>
           {tweet.image_url && (
             <div className="mt-3 rounded-lg overflow-hidden border border-gold-500/10 hover:border-gold-500/30 transition-colors">
-              <div className="aspect-video relative">
-                <Image
-                  src={tweet.image_url}
-                  alt="Tweet image"
-                  fill
-                  className="object-cover"
-                />
-              </div>
+              <Image
+                src={tweet.image_url}
+                alt="Tweet image"
+                width={800}
+                height={1200}
+                className="w-full h-auto"
+                style={{ maxHeight: "70vh" }}
+              />
             </div>
           )}
         </CardContent>
