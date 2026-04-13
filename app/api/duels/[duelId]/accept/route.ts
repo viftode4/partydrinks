@@ -7,7 +7,7 @@ import { getSupabaseServerClient } from "@/lib/supabase"
 
 export async function POST(
   request: Request,
-  { params }: { params: { duelId: string } },
+  { params }: { params: Promise<{ duelId: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -30,7 +30,7 @@ export async function POST(
       return NextResponse.json({ message: "Duels are currently disabled by the host." }, { status: 409 })
     }
 
-    const { duelId } = params
+    const { duelId } = await params
     const { data: duel, error: duelError } = await supabase
       .from("duels")
       .select("*")

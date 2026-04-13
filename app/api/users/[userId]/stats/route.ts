@@ -28,7 +28,7 @@ export async function GET(
       .from("leaderboard")
       .select("total_points, cigarette_count")
       .eq("user_id", userId)
-      .single()
+      .maybeSingle()
 
     if (leaderboardError) {
       console.error("Error fetching leaderboard stats:", leaderboardError)
@@ -47,7 +47,7 @@ export async function GET(
     }
 
     // Calculate drink types
-    const drinkTypes = drinks.reduce((acc: { [key: string]: number }, drink) => {
+    const drinkTypes = (drinks ?? []).reduce((acc: { [key: string]: number }, drink) => {
       acc[drink.drink_type] = (acc[drink.drink_type] || 0) + 1
       return acc
     }, {})
