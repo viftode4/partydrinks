@@ -9,9 +9,8 @@ import { AuthProvider } from "@/components/auth-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Party Leaderboard",
-  description: "Track drinks, tweets, and more at the party!",
-    generator: 'v0.dev'
+  title: "Birthday Party Leaderboard",
+  description: "Track drinks, tweets, and the birthday-party leaderboard in one place.",
 }
 
 export default function RootLayout({
