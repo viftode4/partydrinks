@@ -9,6 +9,7 @@ The repo is being refactored in place according to:
 - `.omx/plans/prd-birthday-party-refactor.md`
 - `.omx/plans/test-spec-birthday-party-refactor.md`
 - `docs/birthday-refactor-audit.md`
+- `docs/birthday-operator-runbook.md`
 
 ### Must-ship scope
 
@@ -76,3 +77,4 @@ See `SUPABASE_SETUP.md` for database setup notes.
 - do not add new dependencies without explicit approval
 - verify lint, typecheck, and build before claiming completion
 - document bounded exceptions when a verification step cannot pass yet
+- update the operator runbook whenever flags, rehearsal steps, or rollback behavior change

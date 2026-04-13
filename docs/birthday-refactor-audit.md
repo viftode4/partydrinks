@@ -46,6 +46,16 @@ The codebase still reflects its original MVP state. The biggest gaps against the
 - The approved seeded rehearsal thresholds exist in the plan docs, but there is no repo-local runbook or scripted rehearsal evidence yet.
 - Verification currently depends on lint, build, and ad-hoc manual checks.
 
+## Shared-file overlap risks
+
+These areas are likely to attract concurrent edits from the implementation lanes and should be treated as merge hotspots:
+
+- `app/api/leaderboard/route.ts` currently computes ranking directly from drinks/cigarettes queries, so canonical ledger/rank work will likely rewrite this route.
+- `lib/types.ts` and leaderboard-facing components (`components/leaderboard-content.tsx`, `components/leaderboard-user-card.tsx`, `app/projector/page.tsx`) will likely change together once server-authoritative rank payloads and duel/rivalry callouts land.
+- `lib/storage.ts` is already a typecheck blocker, so core fixes there can overlap with verification hardening.
+
+Documentation work in this task intentionally stayed in `README.md` and `docs/` to avoid conflicting with those implementation lanes.
+
 ## Recommended execution order
 
 1. **Stability pass first**
