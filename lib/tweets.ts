@@ -38,7 +38,7 @@ export function normalizeTweetUser(user: RawTweetRecord["users"], fallbackUserId
     }
   }
 
-  if (user) {
+  if (user && !Array.isArray(user)) {
     return user
   }
 
