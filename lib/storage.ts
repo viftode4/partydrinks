@@ -1,4 +1,5 @@
 import { getSupabaseBrowserClient, getSupabaseServerClient } from './supabase'
+import { isStorageBucketMissingError } from "./storage-errors"
 
 /**
  * Upload a file to Supabase storage
@@ -62,10 +63,10 @@ export async function ensureStorageBuckets() {
   const supabase = getSupabaseServerClient()
   
   // Check and create profile-images bucket
-  const { data: profileBucket, error: profileError } = await supabase.storage
+  const { error: profileError } = await supabase.storage
     .getBucket('profile-images')
   
-  if (profileError && profileError.code === 'PGRST116') { // Bucket not found
+  if (isStorageBucketMissingError(profileError)) {
     await supabase.storage.createBucket('profile-images', {
       public: true,
       fileSizeLimit: 1024 * 1024 * 2 // 2MB limit for profile images
@@ -73,10 +74,10 @@ export async function ensureStorageBuckets() {
   }
   
   // Check and create tweet-images bucket
-  const { data: tweetBucket, error: tweetError } = await supabase.storage
+  const { error: tweetError } = await supabase.storage
     .getBucket('tweet-images')
   
-  if (tweetError && tweetError.code === 'PGRST116') { // Bucket not found
+  if (isStorageBucketMissingError(tweetError)) {
     await supabase.storage.createBucket('tweet-images', {
       public: true,
       fileSizeLimit: 1024 * 1024 * 5 // 5MB limit for tweet images

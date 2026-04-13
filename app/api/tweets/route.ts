@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { getSupabaseServerClient } from "@/lib/supabase"
 import { authOptions } from "@/lib/auth"
+import { buildUserStatsMap, formatTweetsWithStats } from "@/lib/tweets"
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,19 +49,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-interface UserProfile {
-  id: string;
-  username: string;
-  profile_image_url: string;
-}
-
-interface UserStats {
-  [key: string]: {
-    total_points: number;
-    cigarette_count: number;
-  };
-}
-
 export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseServerClient()
@@ -91,23 +79,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([])
     }
 
-    // Format the tweets - handle the structure from Supabase
-    const formattedTweets = tweets.map((tweet: any) => {
-      // Supabase returns users as the first item in an array due to the join
-      const userProfile = tweet.users as UserProfile
-      
-      return {
-        id: tweet.id,
-        content: tweet.content,
-        image_url: tweet.image_url,
-        created_at: tweet.created_at,
-        user_id: tweet.user_id,
-        user: userProfile,
-        total_points: 0, // Will be updated below
-        cigarette_count: 0 // Will be updated below
-      }
-    })
-
     // Get unique user IDs from tweets
     const userIds = [...new Set(tweets.map((tweet: any) => tweet.user_id))]
 
@@ -122,26 +93,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "Failed to fetch user stats" }, { status: 500 })
     }
 
-    // Create a map of user stats
-    const userStats: UserStats = {}
-    pointsData?.forEach((item: any) => {
-      if (item.user_id) {
-        userStats[item.user_id] = {
-          total_points: item.total_points || 0,
-          cigarette_count: item.cigarette_count || 0
-        }
-      }
-    })
-
-    // Update each tweet with the user's stats
-    const tweetsWithStats = formattedTweets.map(tweet => {
-      const stats = userStats[tweet.user_id] || { total_points: 0, cigarette_count: 0 }
-      return {
-        ...tweet,
-        total_points: stats.total_points,
-        cigarette_count: stats.cigarette_count
-      }
-    })
+    const userStats = buildUserStatsMap(pointsData ?? [])
+    const tweetsWithStats = formatTweetsWithStats(tweets, userStats)
 
     return NextResponse.json(tweetsWithStats)
   } catch (error) {

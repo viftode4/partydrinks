@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { LeaderboardUserCard } from "@/components/leaderboard-user-card"
 import { TweetCard } from "@/components/tweet-card"
 import type { LeaderboardUser } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Beer, Martini, Wine, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { limitProjectorTweets, mergeProjectorLeaderboardUsers } from "@/lib/projector"
 
 interface ExtendedTweet {
   id: string
@@ -31,6 +31,7 @@ export default function ProjectorPage() {
   const [countdown, setCountdown] = useState(5)
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const usersRef = useRef<LeaderboardUser[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,31 +46,13 @@ export default function ProjectorPage() {
         }
         
         const leaderboardData = await leaderboardResponse.json()
-        console.log("Raw leaderboard data:", JSON.stringify(leaderboardData, null, 2))
 
         if (!Array.isArray(leaderboardData)) {
-          console.error("Leaderboard data is not an array:", leaderboardData)
           throw new Error("Invalid leaderboard data format")
         }
 
-        if (leaderboardData.length === 0) {
-          console.log("Leaderboard data is empty array")
-        }
-
-        // Store previous ranks before updating
-        const updatedData = leaderboardData.map((user: any) => {
-          console.log("Processing user:", user)
-          const existingUser = users.find((u) => u.id === user.id)
-          const mappedUser = {
-            ...user,
-            image_url: user.profile_image_url || user.image_url,
-            previousRank: existingUser?.rank || user.rank,
-          }
-          console.log("Mapped user result:", mappedUser)
-          return mappedUser
-        })
-
-        console.log("Final leaderboard data:", JSON.stringify(updatedData, null, 2))
+        const updatedData = mergeProjectorLeaderboardUsers(leaderboardData, usersRef.current)
+        usersRef.current = updatedData
         setUsers(updatedData)
 
         // Fetch tweets
@@ -79,7 +62,7 @@ export default function ProjectorPage() {
         }
         
         const tweetsData = await tweetsResponse.json()
-        setTweets(tweetsData.slice(0, 10)) // Show only the 10 most recent tweets
+        setTweets(limitProjectorTweets(tweetsData))
       } catch (error) {
         console.error("Failed to fetch data:", error)
         setError(error instanceof Error ? error.message : "Failed to fetch data")
