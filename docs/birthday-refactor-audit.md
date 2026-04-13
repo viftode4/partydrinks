@@ -69,6 +69,13 @@ The codebase still reflects its original MVP state. The biggest gaps against the
 - Rewrote `README.md` to reflect the approved birthday-party refactor scope.
 - Added this audit document so the team has a concrete gap list tied to the PRD and test spec.
 
+## Verification snapshot (2026-04-13)
+
+- `pnpm build` ✅ passes and produces the current Next.js app bundle.
+- `pnpm exec tsc --noEmit` ❌ fails in `lib/storage.ts` because `StorageError` is accessed via a non-existent `code` property.
+- `pnpm lint` ❌ cannot run non-interactively because the repo does not yet include an ESLint configuration.
+- `pnpm test` ❌ no test command is defined.
+
 ## Suggested next follow-ups
 
 - Add a scripted `typecheck` command and a real `test` command in `package.json`.
