@@ -1,12 +1,15 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { ProjectorPartyCallouts } from "@/components/projector-party-callouts"
 import { LeaderboardUserCard } from "@/components/leaderboard-user-card"
 import { TweetCard } from "@/components/tweet-card"
+import type { DuelRow } from "@/lib/duels"
+import { getDefaultPartyFeatureFlags, type PartyFeatureFlags } from "@/lib/feature-flags"
 import type { LeaderboardUser } from "@/lib/types"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Beer, Martini, Wine, Clock } from "lucide-react"
+import { Beer, Martini, Wine, Clock, Sparkles } from "lucide-react"
 import { limitProjectorTweets, mergeProjectorLeaderboardUsers } from "@/lib/projector"
 
 interface ExtendedTweet {
@@ -28,6 +31,8 @@ interface ExtendedTweet {
 export default function ProjectorPage() {
   const [users, setUsers] = useState<LeaderboardUser[]>([])
   const [tweets, setTweets] = useState<ExtendedTweet[]>([])
+  const [duels, setDuels] = useState<DuelRow[]>([])
+  const [flags, setFlags] = useState<PartyFeatureFlags>(getDefaultPartyFeatureFlags())
   const [countdown, setCountdown] = useState(5)
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,6 +68,28 @@ export default function ProjectorPage() {
         
         const tweetsData = await tweetsResponse.json()
         setTweets(limitProjectorTweets(tweetsData))
+
+        const featureFlagResponse = await fetch("/api/feature-flags")
+        let nextFlags = getDefaultPartyFeatureFlags()
+
+        if (featureFlagResponse.ok) {
+          nextFlags = await featureFlagResponse.json()
+        }
+
+        setFlags(nextFlags)
+
+        if (nextFlags.duels) {
+          const duelsResponse = await fetch("/api/duels")
+
+          if (duelsResponse.ok) {
+            const duelData = await duelsResponse.json()
+            setDuels(Array.isArray(duelData) ? duelData : [])
+          } else if (duelsResponse.status === 401) {
+            setDuels([])
+          }
+        } else {
+          setDuels([])
+        }
       } catch (error) {
         console.error("Failed to fetch data:", error)
         setError(error instanceof Error ? error.message : "Failed to fetch data")
@@ -89,8 +116,8 @@ export default function ProjectorPage() {
   }, []) // Remove users dependency
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-8">
-      <header className="mb-8 text-center">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.35),_transparent_30%),linear-gradient(135deg,_#111827,_#020617_55%,_#0f172a)] p-6 lg:p-8">
+      <header className="mb-8 space-y-6 text-center">
         <motion.div
           className="flex justify-center gap-8 mb-6"
           initial={{ opacity: 0, y: -20 }}
@@ -125,21 +152,34 @@ export default function ProjectorPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Party Leaderboard
+          Birthday Battle Board
         </motion.h1>
         <motion.div
-          className="flex items-center justify-center gap-2 text-gray-400"
+          className="flex flex-wrap items-center justify-center gap-3 text-white/70"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Clock className="h-5 w-5" />
           <span>Next update in {countdown}s</span>
+          <span className="hidden h-1 w-1 rounded-full bg-white/30 sm:inline-block" />
+          <span className="inline-flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Projector-friendly party pulse, rivalries, and live crowd energy.
+          </span>
         </motion.div>
+
+        <ProjectorPartyCallouts
+          countdown={countdown}
+          duels={duels}
+          flags={flags}
+          isUpdating={isUpdating}
+          users={users}
+        />
       </header>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-center">
+        <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-red-300">
           {error}
         </div>
       )}
@@ -147,9 +187,9 @@ export default function ProjectorPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-full mx-auto">
         {/* Tweets Column */}
         <div className="relative">
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="border-white/10 bg-slate-950/80 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-2xl text-center text-white">Latest Tweets</CardTitle>
+              <CardTitle className="text-2xl text-center text-white">Crowd Camera</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 overflow-hidden">
               <AnimatePresence mode="popLayout">
@@ -171,15 +211,15 @@ export default function ProjectorPage() {
 
         {/* Leaderboard Spanning 2 Columns */}
         <div className="lg:col-span-2 relative">
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="border-white/10 bg-slate-950/80 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-2xl text-center text-white">Top Drinkers</CardTitle>
+              <CardTitle className="text-2xl text-center text-white">Main Stage Standings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 relative min-h-[200px]">
               {isUpdating && (
                 <div className="absolute top-2 left-1/2 -translate-x-1/2">
-                  <div className="px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full">
-                    <p className="text-yellow-500 text-sm">Updating...</p>
+                  <div className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1">
+                    <p className="text-sm text-yellow-300">Refreshing stage lights…</p>
                   </div>
                 </div>
               )}
@@ -187,9 +227,9 @@ export default function ProjectorPage() {
                 {users.length === 0 ? (
                   <motion.div
                     layout
-                    className="text-center py-8 text-gray-400"
+                    className="py-8 text-center text-white/60"
                   >
-                    <p>No drinkers yet. Time to grab a drink! 🍻</p>
+                    <p>No birthday legends on the board yet. First sip gets the roar. 🍻</p>
                   </motion.div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

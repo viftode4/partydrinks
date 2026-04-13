@@ -1,7 +1,12 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 
-import { limitProjectorTweets, mergeProjectorLeaderboardUsers } from "../lib/projector.ts"
+import {
+  findClosestProjectorBattle,
+  findProjectorHotStreak,
+  limitProjectorTweets,
+  mergeProjectorLeaderboardUsers,
+} from "../lib/projector.ts"
 
 test("mergeProjectorLeaderboardUsers preserves previous rank history and image fallback", () => {
   const merged = mergeProjectorLeaderboardUsers(
@@ -57,4 +62,85 @@ test("limitProjectorTweets keeps the newest tweets list bounded", () => {
     { id: "t-1" },
     { id: "t-2" },
   ])
+})
+
+test("findClosestProjectorBattle prefers the tightest adjacent race", () => {
+  const battle = findClosestProjectorBattle([
+    {
+      id: "u1",
+      username: "Ava",
+      image_url: "",
+      total_points: 15,
+      cigarette_count: 0,
+      rank: 1,
+      previousRank: 1,
+    },
+    {
+      id: "u2",
+      username: "Beau",
+      image_url: "",
+      total_points: 14,
+      cigarette_count: 0,
+      rank: 2,
+      previousRank: 3,
+    },
+    {
+      id: "u3",
+      username: "Cam",
+      image_url: "",
+      total_points: 8,
+      cigarette_count: 0,
+      rank: 3,
+      previousRank: 2,
+    },
+  ])
+
+  assert.deepEqual(
+    battle && {
+      leader: battle.leader.username,
+      challenger: battle.challenger.username,
+      gap: battle.gap,
+    },
+    { leader: "Ava", challenger: "Beau", gap: 1 },
+  )
+})
+
+test("findProjectorHotStreak returns the biggest upward mover", () => {
+  const streak = findProjectorHotStreak([
+    {
+      id: "u1",
+      username: "Ava",
+      image_url: "",
+      total_points: 15,
+      cigarette_count: 0,
+      rank: 1,
+      previousRank: 1,
+    },
+    {
+      id: "u2",
+      username: "Beau",
+      image_url: "",
+      total_points: 14,
+      cigarette_count: 0,
+      rank: 2,
+      previousRank: 5,
+    },
+    {
+      id: "u3",
+      username: "Cam",
+      image_url: "",
+      total_points: 8,
+      cigarette_count: 0,
+      rank: 3,
+      previousRank: 4,
+    },
+  ])
+
+  assert.deepEqual(
+    streak && {
+      user: streak.user.username,
+      placesGained: streak.placesGained,
+    },
+    { user: "Beau", placesGained: 3 },
+  )
 })
