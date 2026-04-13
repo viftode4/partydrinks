@@ -28,7 +28,7 @@ const partyHighlights = [
 ]
 
 export default function HomePage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
 
   useEffect(() => {

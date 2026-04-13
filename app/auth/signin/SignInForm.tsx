@@ -50,7 +50,7 @@ export default function SignInForm() {
         router.push(callbackUrl)
         router.refresh()
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Authentication Error",
         description: "The front door jammed for a second. Please try again.",

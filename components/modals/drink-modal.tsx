@@ -80,6 +80,7 @@ export function DrinkModal() {
 
       onClose()
     } catch (error) {
+      console.error("Failed to add drink:", error)
       toast({
         title: "Error",
         description: "Failed to add drink. Please try again.",
@@ -121,6 +122,7 @@ export function DrinkModal() {
 
       onClose()
     } catch (error) {
+      console.error("Failed to add cigarette:", error)
       toast({
         title: "Error",
         description: "Failed to add cigarette. Please try again.",

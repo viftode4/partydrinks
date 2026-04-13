@@ -1,7 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { ensureStorageBuckets } from "@/lib/storage"
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     await ensureStorageBuckets()
     return NextResponse.json({ message: "Storage buckets initialized successfully" })

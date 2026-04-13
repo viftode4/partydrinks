@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { TweetForm } from "@/components/tweet-form"
 import { TweetCard } from "@/components/tweet-card"
 import { Badge } from "@/components/ui/badge"
@@ -17,9 +17,9 @@ export default function TweetsContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const fetchTweets = async () => {
+  const fetchTweets = useCallback(async (showLoadingState = false) => {
     try {
-      if (tweets.length === 0) {
+      if (showLoadingState) {
         setIsLoading(true)
       } else {
         setIsRefreshing(true)
@@ -36,14 +36,16 @@ export default function TweetsContent() {
       setIsLoading(false)
       setIsRefreshing(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    fetchTweets()
-    const intervalId = setInterval(fetchTweets, 12000)
+    void fetchTweets(true)
+    const intervalId = setInterval(() => {
+      void fetchTweets()
+    }, 12000)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [fetchTweets])
 
   const latestTweet = useMemo(() => tweets[0] ?? null, [tweets])
 
@@ -84,7 +86,7 @@ export default function TweetsContent() {
         </div>
       </section>
 
-      <TweetForm onTweetPosted={fetchTweets} />
+      <TweetForm onTweetPosted={() => void fetchTweets()} />
 
       <div className="space-y-4">
         {isLoading && tweets.length === 0 ? (

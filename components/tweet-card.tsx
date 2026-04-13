@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable @next/next/no-img-element */
 
 import { formatDistanceToNow } from "date-fns"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"

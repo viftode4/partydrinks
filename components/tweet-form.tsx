@@ -14,6 +14,10 @@ import { uploadTweetImage } from "@/lib/storage"
 
 const MAX_CHARS = 300
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
   const { data: session } = useSession()
   const [content, setContent] = useState("")
@@ -81,9 +85,9 @@ export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
     try {
       // Initialize storage buckets first
       try {
-        await fetch("/api/init-storage", { method: "GET" });
+        await fetch("/api/init-storage", { method: "GET" })
       } catch (error) {
-        console.error("Failed to initialize storage buckets:", error);
+        console.error("Failed to initialize storage buckets:", error)
         // Continue anyway, as buckets might already exist
       }
       
@@ -93,10 +97,10 @@ export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
       if (image) {
         try {
           // Use the helper function from lib/storage
-          imageUrl = await uploadTweetImage(image);
-        } catch (uploadError: any) {
-          console.error("Image upload error:", uploadError);
-          throw new Error(`Failed to upload image: ${uploadError.message}`);
+          imageUrl = await uploadTweetImage(image)
+        } catch (uploadError: unknown) {
+          console.error("Image upload error:", uploadError)
+          throw new Error(`Failed to upload image: ${getErrorMessage(uploadError, "Unknown upload error")}`)
         }
       }
 
@@ -113,7 +117,7 @@ export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json()
         throw new Error(errorData.message || "Failed to post tweet")
       }
 
@@ -129,10 +133,10 @@ export function TweetForm({ onTweetPosted }: { onTweetPosted: () => void }) {
 
       // Refresh tweets
       onTweetPosted()
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to post. Please try again.",
+        description: getErrorMessage(error, "Failed to post. Please try again."),
         variant: "destructive",
       })
     } finally {

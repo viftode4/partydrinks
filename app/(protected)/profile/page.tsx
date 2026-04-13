@@ -85,6 +85,11 @@ export default function ProfilePage() {
     router.push("/auth/signin")
   }
 
+  const topDrink = useMemo(
+    () => Object.entries(stats.drinkTypes).sort((left, right) => right[1] - left[1])[0] ?? null,
+    [stats.drinkTypes],
+  )
+
   if (!session?.user) {
     return null
   }
@@ -92,10 +97,6 @@ export default function ProfilePage() {
   const partyInsights = buildPartyInsights(leaderboardUsers)
   const currentLeaderboardEntry = leaderboardUsers.find((user) => user.id === session.user.id) ?? null
   const currentInsight = currentLeaderboardEntry ? partyInsights[currentLeaderboardEntry.id] : null
-  const topDrink = useMemo(
-    () => Object.entries(stats.drinkTypes).sort((left, right) => right[1] - left[1])[0] ?? null,
-    [stats.drinkTypes],
-  )
   const pendingDuelCount = duels.filter((duel) => duel.status === "pending").length
   const activeDuelCount = duels.filter((duel) => duel.status === "active").length
   const duelCopy = featureFlags?.duels

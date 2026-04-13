@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { getSupabaseServerClient } from "@/lib/supabase"
 import { authOptions } from "@/lib/auth"
-import { buildUserStatsMap, formatTweetsWithStats } from "@/lib/tweets"
+import { buildUserStatsMap, formatTweetsWithStats, type RawTweetRecord } from "@/lib/tweets"
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = getSupabaseServerClient()
 
@@ -79,8 +79,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json([])
     }
 
+    const tweetRows = tweets as RawTweetRecord[]
+
     // Get unique user IDs from tweets
-    const userIds = [...new Set(tweets.map((tweet: any) => tweet.user_id))]
+    const userIds = [...new Set(tweetRows.map((tweet) => tweet.user_id))]
 
     // Get total points for each user
     const { data: pointsData, error: pointsError } = await supabase
@@ -94,7 +96,7 @@ export async function GET(request: NextRequest) {
     }
 
     const userStats = buildUserStatsMap(pointsData ?? [])
-    const tweetsWithStats = formatTweetsWithStats(tweets, userStats)
+    const tweetsWithStats = formatTweetsWithStats(tweetRows, userStats)
 
     return NextResponse.json(tweetsWithStats)
   } catch (error) {

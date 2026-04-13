@@ -16,6 +16,10 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { uploadProfileImage } from "@/lib/storage"
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback
+}
+
 export default function SignUp() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -80,20 +84,20 @@ export default function SignUp() {
     try {
       // Try to initialize buckets first
       try {
-        await fetch("/api/init-storage", { method: "GET" });
+        await fetch("/api/init-storage", { method: "GET" })
       } catch (error) {
-        console.error("Failed to initialize storage buckets:", error);
+        console.error("Failed to initialize storage buckets:", error)
         // Continue anyway, as buckets might already exist
       }
 
-      let profileImageUrl = "";
+      let profileImageUrl = ""
       
       // Upload image using the helper function
       try {
-        profileImageUrl = await uploadProfileImage(image);
-      } catch (uploadError: any) {
-        console.error("Image upload error:", uploadError);
-        throw new Error(`Failed to upload image: ${uploadError.message}`);
+        profileImageUrl = await uploadProfileImage(image)
+      } catch (uploadError: unknown) {
+        console.error("Image upload error:", uploadError)
+        throw new Error(`Failed to upload image: ${getErrorMessage(uploadError, "Unknown upload error")}`)
       }
 
       // Register user
@@ -107,9 +111,9 @@ export default function SignUp() {
           password,
           profile_image_url: profileImageUrl,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
@@ -127,27 +131,27 @@ export default function SignUp() {
         toast({
           title: "Registration Successful",
           description: "Your badge is ready. Sign in and head to the party floor.",
-        });
-        router.push("/auth/signin");
+        })
+        router.push("/auth/signin")
       } else {
         // If sign-in succeeds, redirect to leaderboard
         toast({
           title: "Registration Successful",
           description: "You are officially on the birthday leaderboard.",
-        });
-        router.push("/leaderboard");
-        router.refresh();
+        })
+        router.push("/leaderboard")
+        router.refresh()
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Registration Error",
-        description: error.message || "We could not print your party badge yet. Please try again.",
+        description: getErrorMessage(error, "We could not print your party badge yet. Please try again."),
         variant: "destructive",
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // If still loading the session, show a loading state
   if (status === "loading") {
