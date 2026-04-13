@@ -31,13 +31,24 @@ export default function SignUp() {
   // Redirect to leaderboard if already authenticated
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/leaderboard")
+      router.replace("/leaderboard")
     }
   }, [status, router])
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview)
+      }
+    }
+  }, [imagePreview])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview)
+      }
       setImage(file)
       setImagePreview(URL.createObjectURL(file))
     }
@@ -49,7 +60,7 @@ export default function SignUp() {
     if (password !== confirmPassword) {
       toast({
         title: "Password Error",
-        description: "Passwords do not match.",
+        description: "Make sure both password fields match before joining the party.",
         variant: "destructive",
       })
       return
@@ -58,7 +69,7 @@ export default function SignUp() {
     if (!image) {
       toast({
         title: "Image Required",
-        description: "Please upload a profile picture.",
+        description: "Add a photo so the projector and leaderboard can spot you instantly.",
         variant: "destructive",
       })
       return
@@ -115,14 +126,14 @@ export default function SignUp() {
         // If sign-in fails, still redirect to sign-in page
         toast({
           title: "Registration Successful",
-          description: "Your account has been created. Please sign in.",
+          description: "Your badge is ready. Sign in and head to the party floor.",
         });
         router.push("/auth/signin");
       } else {
         // If sign-in succeeds, redirect to leaderboard
         toast({
           title: "Registration Successful",
-          description: "Welcome to the party!",
+          description: "You are officially on the birthday leaderboard.",
         });
         router.push("/leaderboard");
         router.refresh();
@@ -130,7 +141,7 @@ export default function SignUp() {
     } catch (error: any) {
       toast({
         title: "Registration Error",
-        description: error.message || "Something went wrong. Please try again.",
+        description: error.message || "We could not print your party badge yet. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -155,7 +166,7 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center gap-3 mb-4">
@@ -181,16 +192,21 @@ export default function SignUp() {
               <Wine className="h-8 w-8 text-red-500" />
             </motion.div>
           </div>
-          <CardTitle className="text-2xl font-bold">Join the Party!</CardTitle>
-          <CardDescription>Create an account to join the leaderboard</CardDescription>
+          <CardTitle className="text-2xl font-bold">Claim your party badge</CardTitle>
+          <CardDescription>
+            Pick a handle and a photo so the room knows who just climbed the birthday leaderboard.
+          </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            <div className="rounded-lg bg-muted/60 p-3 text-left text-sm text-muted-foreground">
+              Your username shows up on posts and rankings, and your photo helps projector callouts feel personal.
+            </div>
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
-                placeholder="Choose a username"
+                placeholder="How should the party know you?"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -201,7 +217,7 @@ export default function SignUp() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Create a password"
+                placeholder="Create a password for your badge"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -212,7 +228,7 @@ export default function SignUp() {
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder="Confirm it one more time"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -220,6 +236,7 @@ export default function SignUp() {
             </div>
             <div className="space-y-2">
               <Label>Profile Picture (Required)</Label>
+              <p className="text-xs text-muted-foreground">Required for leaderboard bragging rights and projector moments.</p>
               <div className="flex flex-col items-center gap-4">
                 <input
                   type="file"
@@ -255,7 +272,7 @@ export default function SignUp() {
                   >
                     <div className="flex flex-col items-center justify-center">
                       <Upload className="mb-1 h-6 w-6" />
-                      <span className="text-xs">Upload</span>
+                      <span className="text-xs">Add photo</span>
                     </div>
                   </Button>
                 )}
@@ -268,10 +285,10 @@ export default function SignUp() {
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
               disabled={isLoading}
             >
-              {isLoading ? "Creating account..." : "Create account"}
+              {isLoading ? "Printing your badge..." : "Join the party"}
             </Button>
             <p className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              Already on the guest list?{" "}
               <Link href="/auth/signin" className="text-purple-500 hover:underline">
                 Sign in
               </Link>
@@ -280,5 +297,5 @@ export default function SignUp() {
         </form>
       </Card>
     </div>
-  );
+  )
 }

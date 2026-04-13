@@ -21,12 +21,13 @@ export default function SignInForm() {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams?.get("callbackUrl") || "/leaderboard"
   const { status } = useSession()
+  const returningToProtectedPage = callbackUrl !== "/leaderboard"
   
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/leaderboard")
+      router.replace(callbackUrl)
     }
-  }, [status, router])
+  }, [callbackUrl, status, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,7 +43,7 @@ export default function SignInForm() {
       if (result?.error) {
         toast({
           title: "Authentication Error",
-          description: "Invalid username or password.",
+          description: "That username/password combo did not make the guest list. Try again.",
           variant: "destructive",
         })
       } else {
@@ -52,7 +53,7 @@ export default function SignInForm() {
     } catch (error) {
       toast({
         title: "Authentication Error",
-        description: "Something went wrong. Please try again.",
+        description: "The front door jammed for a second. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -69,14 +70,14 @@ export default function SignInForm() {
             <Martini className="h-8 w-8 text-pink-400" />
             <Wine className="h-8 w-8 text-red-500" />
           </div>
-          <p className="text-white">Loading...</p>
+          <p className="text-white">Getting the party door ready...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center gap-3 mb-4">
@@ -102,11 +103,18 @@ export default function SignInForm() {
               <Wine className="h-8 w-8 text-red-500" />
             </motion.div>
           </div>
-          <CardTitle className="text-2xl font-bold">Party Time!</CardTitle>
-          <CardDescription>Sign in to track your drinks and see the leaderboard</CardDescription>
+          <CardTitle className="text-2xl font-bold">Welcome back to the birthday floor</CardTitle>
+          <CardDescription>
+            Sign in to jump into the leaderboard, party posts, and projector-ready chaos.
+          </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            <div className="rounded-lg bg-muted/60 p-3 text-left text-sm text-muted-foreground">
+              {returningToProtectedPage
+                ? "Sign in and we’ll send you straight back to the page that asked for you."
+                : "Your profile photo, posts, and leaderboard standing will be waiting on the other side."}
+            </div>
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
@@ -135,12 +143,12 @@ export default function SignInForm() {
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Opening the velvet rope..." : "Let me in"}
             </Button>
             <p className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
+              Need a party badge?{" "}
               <Link href="/auth/signup" className="text-purple-500 hover:underline">
-                Sign up
+                Create one
               </Link>
             </p>
           </CardFooter>
@@ -148,4 +156,4 @@ export default function SignInForm() {
       </Card>
     </div>
   )
-} 
+}

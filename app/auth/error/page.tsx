@@ -15,35 +15,38 @@ export default function AuthErrorPage() {
     const error = searchParams.get("error")
 
     if (error === "CredentialsSignin") {
-      setErrorMessage("Invalid username or password. Please try again.")
+      setErrorMessage("That username/password combo did not match the guest list. Try again.")
     } else if (error === "SessionRequired") {
-      setErrorMessage("You need to be signed in to access this page.")
+      setErrorMessage("That page needs a signed-in party guest before it can open.")
     } else if (error) {
-      setErrorMessage(`Authentication error: ${error}`)
+      setErrorMessage(`Authentication hiccup: ${error}`)
     } else {
-      setErrorMessage("An unknown authentication error occurred.")
+      setErrorMessage("An unknown sign-in issue popped up.")
     }
   }, [searchParams])
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <AlertCircle className="h-12 w-12 text-red-500" />
           </div>
-          <CardTitle className="text-2xl font-bold">Authentication Error</CardTitle>
+          <CardTitle className="text-2xl font-bold">Couldn&apos;t get you into the party</CardTitle>
           <CardDescription>{errorMessage}</CardDescription>
         </CardHeader>
         <CardContent className="text-center">
-          <p>Please try signing in again or contact support if the problem persists.</p>
+          <p>Try the sign-in flow again, or create a fresh badge if you were supposed to join for the first time.</p>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button
             asChild
             className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
           >
             <Link href="/auth/signin">Return to Sign In</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/auth/signup">Create Account</Link>
           </Button>
         </CardFooter>
       </Card>
