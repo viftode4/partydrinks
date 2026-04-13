@@ -1,95 +1,78 @@
-# 🍻 PARTY DRINKS TRACKER 🍹
+# Party Drinks
 
-The ultimate party companion that tracks who's drinking what and crowns the party champion! 👑 Watch as your friends compete for the top spot on the leaderboard while sharing their drinking adventures through tweets. 🏆
+Party Drinks is a Next.js + Supabase party scoreboard for a birthday event. It tracks drinks, renders a live leaderboard, shows a tweet wall, and includes a projector view for a shared screen.
 
-Made for me and my good friend's Daniel joint Birthday Party BBQ. 🎂 Got wasted because of it. 🥴 Recommended by Delft Nerds (allegedly). 🤓. Drinking isn't a Sprint it's a Marathon.
+## Current refactor status
 
-Vibe coded in 4hrs. ⏱️
+The repo is being refactored in place according to:
 
-## 🎉 Features
+- `.omx/plans/prd-birthday-party-refactor.md`
+- `.omx/plans/test-spec-birthday-party-refactor.md`
+- `docs/birthday-refactor-audit.md`
 
-- **Real-time Leaderboard** 📊: See who's leading the pack with automatic updates every 5 seconds
-- **Tweet Wall** 🐦: Share your drinking moments with the party crew
-- **Drink Tracking** 🍺🍷🍸: Log beers, wines, cocktails, and even cigarettes (if you're into that) 🚬
-- **Projector Mode** 📽️: Display the leaderboard on a big screen for maximum competitive spirit
+### Must-ship scope
 
-## 🔍 How to use
+- stability and UX polish across auth, leaderboard, tweets, profile, and projector
+- canonical server-authoritative scoring/ranking core
+- duel gameplay with admin kill switches
+- derived rivalry / hot-streak callouts that remain safely disableable
 
-   1. Deploy 🚀
-   2. Make users register with username pass image all required 📝
-   3. Put `/projector` on a big screen 📺
-   4. Profit 💰✨
+### Guardrails
 
-## 🚀 Deployment
+- stabilize before adding spectacle
+- keep gameplay features gated by default
+- treat leaderboard ranking as server-authoritative
+- prefer additive, reversible schema changes
 
-This app can be deployed in minutes on [Vercel](https://vercel.com) with [Supabase](https://supabase.com) as the DB. ⚡ (all free tiers btw)
+## Product surfaces
 
-### Prerequisites 📋
+- `/leaderboard` — mobile-first party ranking view
+- `/tweets` — social feed for party updates
+- `/profile` — player stats and profile details
+- `/projector` — large-screen party display
 
-1. A Vercel account 🔼
-2. A Supabase account 🗃️
-3. A desire to party responsibly 🥳
-
-### Steps 👣
-
-1. Clone this repo 📂
-   ```bash
-   git clone https://github.com/yourusername/partydrinks.git
-   cd partydrinks
-   ```
-
-2. Create a new Supabase project and set it up. Reference the [/SUPABASE_SETUP.md](/SUPABASE_SETUP.md) file for DB schema and stuff. 💾
-
-3. Install dependencies and run locally: 💻
-   ```bash
-   pnpm / npm install
-   pnpm / npm run dev
-   ```
-
-4. Link Repo to Vercel: 🔄
-
-## 🔧 Environment Variables
-
-Create a `.env` file with the following variables: 🔐
+## Local development
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=blahblah
-NEXT_PUBLIC_SUPABASE_ANON_KEY=blahblah
-SUPABASE_URL=blahblah
-SUPABASE_SERVICE_ROLE_KEY=blahblah
-NEXTAUTH_SECRET="Very Nice Pass"
-
+pnpm install
+pnpm dev
 ```
 
-## 📱 Screenshots
+### Verification commands
 
-![SS from site](https://i.imgur.com/Dqip9cQ.png) 📸
+```bash
+pnpm lint
+pnpm exec tsc --noEmit
+pnpm build
+```
 
-## 👨‍💻 Development
+> There is currently no automated test script in `package.json`. That gap is tracked in `docs/birthday-refactor-audit.md`.
 
-This app is built with: 🛠️
-- Next.js ⚛️
-- Supabase 🔥
-- Framer Motion for those sweet animations ✨
-- Tailwind CSS for styling 🎨
-- shadcn/ui components 🧩
+## Environment
 
-## 📝 License
+Create a `.env` file with the Supabase + auth settings used by the app:
 
-MIT - Go wild but drink responsibly! 🍺➡️🚫🚗
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+NEXTAUTH_SECRET=...
+```
 
-## 🥂 Contributions
+See `SUPABASE_SETUP.md` for database setup notes.
 
-Contributions are welcome! Add new features, improve the UI, or suggest new drinking games to incorporate. 🤝
+## Refactor priorities
 
-## 🔮 Coming Soon
+1. remove stale MVP / New Year branding and debug leftovers
+2. reduce polling and duplicate fetch work, especially on projector
+3. add feature flags and host kill switches before gameplay ships
+4. introduce the canonical ledger / rank / duel core
+5. rehearse with seeded traffic before party-night rollout
 
-- Drink recommendations based on your past choices - (To get more or keep drunk lvl) 🧠🍹
-- Party photo wall to export at the end. 📷🎭
-- Integration with smart bartenders based on available drinks? 🤖🍸
-- Hangover prediction algorithm (still in research phase 🤕) (for Alex) 📊💊
-- Multiplier based on how frequent you drink. ⏱️✖️
-- Cheater prevention (Albert)
----
+## Notes for contributors
 
-**Remember:** With great drinking comes great responsibility. Party on, but stay safe! 🎵🎮🎯🚫🚗🥤 
+- keep diffs small and reversible
+- do not add new dependencies without explicit approval
+- verify lint, typecheck, and build before claiming completion
+- document bounded exceptions when a verification step cannot pass yet
