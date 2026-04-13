@@ -56,3 +56,18 @@ export interface TweetLike {
   tweet_id: string
   created_at: string
 }
+
+export interface Duel {
+  id: string
+  challenger_id: string
+  opponent_id: string
+  status: "pending" | "active" | "completed" | "cancelled"
+  wager_points: number
+  winner_id: string | null
+  loser_id: string | null
+  accepted_at: string | null
+  resolved_at: string | null
+  cancelled_at: string | null
+  metadata: unknown
+  created_at: string
+}

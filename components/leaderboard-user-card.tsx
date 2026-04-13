@@ -1,16 +1,18 @@
 "use client"
 
-import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Beer, Cigarette } from "lucide-react"
 import { motion } from "framer-motion"
 import type { LeaderboardUser } from "@/lib/types"
+import type { PartyInsight } from "@/lib/party-insights"
 import { cn } from "@/lib/utils"
 
 interface LeaderboardUserCardProps {
   user: LeaderboardUser
   isCurrentUser: boolean
+  insight?: PartyInsight
 }
 
 const getMedalEmoji = (rank: number) => {
@@ -28,9 +30,18 @@ const CHAMPION_EMOJIS: Record<string, string> = {
   Cigarette: "🚬",
 }
 
-export function LeaderboardUserCard({ user, isCurrentUser }: LeaderboardUserCardProps) {
+const calloutToneClasses: Record<NonNullable<PartyInsight["primary"]>["tone"], string> = {
+  hot: "border-rose-400/30 bg-rose-500/10 text-rose-100",
+  rivalry: "border-fuchsia-400/30 bg-fuchsia-500/10 text-fuchsia-100",
+  steady: "border-emerald-400/30 bg-emerald-500/10 text-emerald-100",
+  drop: "border-amber-400/30 bg-amber-500/10 text-amber-100",
+}
+
+export function LeaderboardUserCard({ user, isCurrentUser, insight }: LeaderboardUserCardProps) {
   const medal = getMedalEmoji(user.rank)
   const champions = user.champions || []
+  const primaryCallout = insight?.primary
+  const rivalryCallout = insight?.rivalry
 
   return (
     <motion.div
@@ -91,30 +102,52 @@ export function LeaderboardUserCard({ user, isCurrentUser }: LeaderboardUserCard
             )}
           </div>
         </div>
-        <div className="flex flex-col flex-grow min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <p className={cn(
-              "truncate font-bold",
-              user.rank <= 3 ? "text-xl" : "text-lg",
-              user.rank === 1 && "text-gold-400",
-              user.rank === 2 && "text-gray-300",
-              user.rank === 3 && "text-amber-500",
-              user.rank > 3 && "text-champagne-100"
-            )}>{user.username}</p>
-            {champions.length > 0 && (
-              <div className="flex gap-1">
-                {champions.map((type) => (
-                  <span
-                    key={type}
-                    className="text-sm bg-gold-500/20 px-1.5 py-0.5 rounded-full border border-gold-500/30"
-                    title={`${type} Champion`}
-                  >
-                    {CHAMPION_EMOJIS[type] || "👑"}
-                  </span>
-                ))}
-              </div>
+        <div className="flex min-w-0 flex-grow flex-col">
+          <div className="mb-1 flex items-center gap-2">
+            <p
+              className={cn(
+                "truncate font-bold",
+                user.rank <= 3 ? "text-xl" : "text-lg",
+                user.rank === 1 && "text-gold-400",
+                user.rank === 2 && "text-gray-300",
+                user.rank === 3 && "text-amber-500",
+                user.rank > 3 && "text-champagne-100",
+              )}
+            >
+              {user.username}
+            </p>
+            {isCurrentUser && (
+              <Badge className="border-gold-400/30 bg-gold-500/10 text-[10px] uppercase tracking-[0.2em] text-gold-100">
+                You
+              </Badge>
             )}
           </div>
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {champions.map((type) => (
+              <span
+                key={type}
+                className="rounded-full border border-gold-500/30 bg-gold-500/20 px-1.5 py-0.5 text-sm"
+                title={`${type} Champion`}
+              >
+                {CHAMPION_EMOJIS[type] || "👑"}
+              </span>
+            ))}
+            {primaryCallout && (
+              <Badge className={cn("gap-1 border text-[11px] font-medium", calloutToneClasses[primaryCallout.tone])}>
+                {primaryCallout.label}
+              </Badge>
+            )}
+            {rivalryCallout && (
+              <Badge className={cn("gap-1 border text-[11px] font-medium", calloutToneClasses[rivalryCallout.tone])}>
+                {rivalryCallout.label}
+              </Badge>
+            )}
+          </div>
+          {(primaryCallout || rivalryCallout) && (
+            <p className="mb-2 line-clamp-2 text-sm text-champagne-300/85">
+              {primaryCallout?.detail ?? rivalryCallout?.detail}
+            </p>
+          )}
           <div className="flex items-center gap-6">
             <motion.div
               className="flex items-center gap-2"
