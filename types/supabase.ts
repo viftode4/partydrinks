@@ -112,6 +112,99 @@ export interface Database {
           points?: number
         }
       }
+      party_feature_flags: {
+        Row: {
+          key: string
+          enabled: boolean
+          description: string | null
+          updated_at: string
+        }
+        Insert: {
+          key: string
+          enabled?: boolean
+          description?: string | null
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          enabled?: boolean
+          description?: string | null
+          updated_at?: string
+        }
+      }
+      score_events: {
+        Row: {
+          id: string
+          user_id: string
+          source_type: 'drink' | 'duel'
+          source_id: string
+          delta: number
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          source_type: 'drink' | 'duel'
+          source_id: string
+          delta: number
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          source_type?: 'drink' | 'duel'
+          source_id?: string
+          delta?: number
+          metadata?: Json
+          created_at?: string
+        }
+      }
+      duels: {
+        Row: {
+          id: string
+          challenger_id: string
+          opponent_id: string
+          status: 'pending' | 'active' | 'completed' | 'cancelled'
+          wager_points: number
+          winner_id: string | null
+          loser_id: string | null
+          accepted_at: string | null
+          resolved_at: string | null
+          cancelled_at: string | null
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          challenger_id: string
+          opponent_id: string
+          status?: 'pending' | 'active' | 'completed' | 'cancelled'
+          wager_points?: number
+          winner_id?: string | null
+          loser_id?: string | null
+          accepted_at?: string | null
+          resolved_at?: string | null
+          cancelled_at?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          challenger_id?: string
+          opponent_id?: string
+          status?: 'pending' | 'active' | 'completed' | 'cancelled'
+          wager_points?: number
+          winner_id?: string | null
+          loser_id?: string | null
+          accepted_at?: string | null
+          resolved_at?: string | null
+          cancelled_at?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+      }
     }
     Views: {
       leaderboard: {
@@ -123,9 +216,25 @@ export interface Database {
           cigarette_count: number
         }
       }
+      authoritative_rankings: {
+        Row: {
+          user_id: string
+          username: string
+          profile_image_url: string
+          total_points: number
+        }
+      }
     }
     Functions: {
-      [_ in never]: never
+      resolve_duel: {
+        Args: {
+          p_duel_id: string
+          p_winner_id: string
+          p_resolved_by?: string | null
+          p_note?: string | null
+        }
+        Returns: Database['public']['Tables']['duels']['Row']
+      }
     }
     Enums: {
       [_ in never]: never
