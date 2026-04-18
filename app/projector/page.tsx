@@ -1,16 +1,18 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useQuery } from "convex/react"
 import { ProjectorPartyCallouts } from "@/components/projector-party-callouts"
 import { LeaderboardUserCard } from "@/components/leaderboard-user-card"
 import { TweetCard } from "@/components/tweet-card"
 import type { DuelRow } from "@/lib/duels"
 import { getDefaultPartyFeatureFlags, type PartyFeatureFlags } from "@/lib/feature-flags"
 import type { LeaderboardUser } from "@/lib/types"
+import { convexApi } from "@/lib/convex-api"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Beer, Martini, Wine, Clock, Sparkles } from "lucide-react"
-import { limitProjectorTweets, mergeProjectorLeaderboardUsers } from "@/lib/projector"
+import { mergeProjectorLeaderboardUsers } from "@/lib/projector"
 
 interface ExtendedTweet {
   id: string
@@ -30,90 +32,31 @@ interface ExtendedTweet {
 
 export default function ProjectorPage() {
   const [users, setUsers] = useState<LeaderboardUser[]>([])
-  const [tweets, setTweets] = useState<ExtendedTweet[]>([])
-  const [duels, setDuels] = useState<DuelRow[]>([])
-  const [flags, setFlags] = useState<PartyFeatureFlags>(getDefaultPartyFeatureFlags())
-  const [countdown, setCountdown] = useState(5)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const usersRef = useRef<LeaderboardUser[]>([])
+  const snapshot = useQuery(convexApi.projector.snapshot, {}) as
+    | {
+        users: LeaderboardUser[]
+        tweets: ExtendedTweet[]
+        duels: DuelRow[]
+        flags: PartyFeatureFlags
+      }
+    | undefined
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsUpdating(true)
-        setError(null)
-        
-        // Fetch leaderboard
-        const leaderboardResponse = await fetch("/api/leaderboard?includeCigarettes=true")
-        if (!leaderboardResponse.ok) {
-          throw new Error(`Failed to fetch leaderboard: ${leaderboardResponse.statusText}`)
-        }
-        
-        const leaderboardData = await leaderboardResponse.json()
-
-        if (!Array.isArray(leaderboardData)) {
-          throw new Error("Invalid leaderboard data format")
-        }
-
-        const updatedData = mergeProjectorLeaderboardUsers(leaderboardData, usersRef.current)
-        usersRef.current = updatedData
-        setUsers(updatedData)
-
-        // Fetch tweets
-        const tweetsResponse = await fetch("/api/tweets")
-        if (!tweetsResponse.ok) {
-          throw new Error(`Failed to fetch tweets: ${tweetsResponse.statusText}`)
-        }
-        
-        const tweetsData = await tweetsResponse.json()
-        setTweets(limitProjectorTweets(tweetsData))
-
-        const featureFlagResponse = await fetch("/api/feature-flags")
-        let nextFlags = getDefaultPartyFeatureFlags()
-
-        if (featureFlagResponse.ok) {
-          nextFlags = await featureFlagResponse.json()
-        }
-
-        setFlags(nextFlags)
-
-        if (nextFlags.duels) {
-          const duelsResponse = await fetch("/api/duels")
-
-          if (duelsResponse.ok) {
-            const duelData = await duelsResponse.json()
-            setDuels(Array.isArray(duelData) ? duelData : [])
-          } else if (duelsResponse.status === 401) {
-            setDuels([])
-          }
-        } else {
-          setDuels([])
-        }
-      } catch (error) {
-        console.error("Failed to fetch data:", error)
-        setError(error instanceof Error ? error.message : "Failed to fetch data")
-      } finally {
-        setIsUpdating(false)
-        setCountdown(5)
-      }
+    if (!snapshot?.users) {
+      return
     }
 
-    fetchData()
+    const updatedData = mergeProjectorLeaderboardUsers(snapshot.users, usersRef.current)
+    usersRef.current = updatedData
+    setUsers(updatedData)
+  }, [snapshot?.users])
 
-    // Set up polling for real-time updates
-    const intervalId = setInterval(fetchData, 5000) // Poll every 5 seconds
-
-    // Set up countdown timer
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 5))
-    }, 1000)
-
-    return () => {
-      clearInterval(intervalId)
-      clearInterval(countdownInterval)
-    }
-  }, []) // Remove users dependency
+  const tweets = snapshot?.tweets ?? []
+  const duels = snapshot?.duels ?? []
+  const flags = snapshot?.flags ?? getDefaultPartyFeatureFlags()
+  const isUpdating = snapshot === undefined
+  const error = null
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(236,72,153,0.35),_transparent_30%),linear-gradient(135deg,_#111827,_#020617_55%,_#0f172a)] p-6 lg:p-8">
@@ -161,7 +104,7 @@ export default function ProjectorPage() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Clock className="h-5 w-5" />
-          <span>Next update in {countdown}s</span>
+          <span>Live Convex projector feed</span>
           <span className="hidden h-1 w-1 rounded-full bg-white/30 sm:inline-block" />
           <span className="inline-flex items-center gap-2">
             <Sparkles className="h-4 w-4" />
@@ -170,10 +113,8 @@ export default function ProjectorPage() {
         </motion.div>
 
         <ProjectorPartyCallouts
-          countdown={countdown}
           duels={duels}
           flags={flags}
-          isUpdating={isUpdating}
           users={users}
         />
       </header>

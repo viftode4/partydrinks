@@ -1,6 +1,6 @@
 "use client"
 
-import { Crown, Flame, Swords, TimerReset } from "lucide-react"
+import { Crown, Flame, Swords } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -13,26 +13,24 @@ import {
 import type { LeaderboardUser } from "@/lib/types"
 
 interface ProjectorPartyCalloutsProps {
-  countdown: number
   duels: DuelRow[]
   flags: PartyFeatureFlags
-  isUpdating: boolean
   users: LeaderboardUser[]
 }
 
 const openStatuses = new Set<DuelRow["status"]>(["pending", "active"])
 
 export function ProjectorPartyCallouts({
-  countdown,
   duels,
   flags,
-  isUpdating,
   users,
 }: ProjectorPartyCalloutsProps) {
   const leader = users[0] ?? null
   const closestBattle = findClosestProjectorBattle(users)
   const hotStreak = findProjectorHotStreak(users)
-  const liveDuel = duels.find((duel) => openStatuses.has(duel.status)) ?? null
+  const liveDuel = flags.duels
+    ? duels.find((duel) => openStatuses.has(duel.status)) ?? null
+    : null
 
   const resolveUserName = (userId: string) => {
     if (!leader && users.length === 0) {
@@ -42,8 +40,14 @@ export function ProjectorPartyCallouts({
     return users.find((user) => user.id === userId)?.username ?? "Party guest"
   }
 
+  const showDuelCard = flags.duels
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div
+      className={`grid gap-4 md:grid-cols-2 ${
+        showDuelCard ? "xl:grid-cols-4" : "xl:grid-cols-3"
+      }`}
+    >
       <Card className="border-amber-400/30 bg-white/10 backdrop-blur">
         <CardContent className="space-y-3 p-5">
           <div className="flex items-center justify-between">
@@ -105,34 +109,30 @@ export function ProjectorPartyCallouts({
         </CardContent>
       </Card>
 
-      <Card className="border-cyan-400/30 bg-white/10 backdrop-blur">
-        <CardContent className="space-y-3 p-5">
-          <div className="flex items-center justify-between">
-            <Badge className="bg-cyan-400/20 text-cyan-100">
-              {flags.duels ? "Duel desk" : "Refresh room"}
-            </Badge>
-            <TimerReset className="h-5 w-5 text-cyan-200" />
-          </div>
-          {flags.duels && liveDuel ? (
-            <>
-              <p className="text-lg font-semibold text-white">
-                {resolveUserName(liveDuel.challenger_id)} vs {resolveUserName(liveDuel.opponent_id)}
-              </p>
-              <p className="text-sm text-white/75">
-                {liveDuel.status === "active"
-                  ? `Live duel for ${liveDuel.wager_points} pts. The projector crowd is officially feral.`
-                  : `Pending ${liveDuel.wager_points}-point duel. Somebody still has to accept the chaos.`}
-              </p>
-            </>
-          ) : flags.duels ? (
-            <p className="text-sm text-white/75">Duels are armed. The next glove slap starts from the player view.</p>
-          ) : (
-            <p className="text-sm text-white/75">
-              {isUpdating ? "Refreshing the room pulse right now." : `Next board sweep in ${countdown}s.`}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      {showDuelCard && (
+        <Card className="border-cyan-400/30 bg-white/10 backdrop-blur">
+          <CardContent className="space-y-3 p-5">
+            <div className="flex items-center justify-between">
+              <Badge className="bg-cyan-400/20 text-cyan-100">Duel desk</Badge>
+              <Swords className="h-5 w-5 text-cyan-200" />
+            </div>
+            {liveDuel ? (
+              <>
+                <p className="text-lg font-semibold text-white">
+                  {resolveUserName(liveDuel.challenger_id)} vs {resolveUserName(liveDuel.opponent_id)}
+                </p>
+                <p className="text-sm text-white/75">
+                  {liveDuel.status === "active"
+                    ? `Live duel for ${liveDuel.wager_points} pts. The projector crowd is officially feral.`
+                    : `Pending ${liveDuel.wager_points}-point duel. Somebody still has to accept the chaos.`}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-white/75">Duels are armed. The next glove slap starts from the player view.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
